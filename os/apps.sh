@@ -65,6 +65,16 @@ install_chrome() {
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+install_kicad()P{
+        print_in_purple "\n • Installing KiCad & FreeCad \n\n"
+
+        sudo dnf install kicad -y
+
+        sudo dnf install freecad -y
+}
+
+
+
 # ----------------------------------------------------------------------
 # | Main                                                               |
 # ----------------------------------------------------------------------

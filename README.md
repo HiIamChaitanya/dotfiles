@@ -3,7 +3,7 @@
 ## install
 
 ```
-mkdir ~/.dotfiles && cd ~/.dotfiles && git clone https://github.com/HiIamChaitanya/Dotfiles.git
+git clone https://github.com/HiIamChaitanya/.dotfiles.git
 ```
 
 
