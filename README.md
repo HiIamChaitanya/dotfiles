@@ -3,7 +3,7 @@
 ## install
 
 ```
-git clone https://github.com/HiIamChaitanya/.dotfiles.git
+git clone https://github.com/HiIamChaitanya/dotfiles.git
 ```
 
 
