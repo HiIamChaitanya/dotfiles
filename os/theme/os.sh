@@ -2,18 +2,8 @@
 
 declare DOT=$HOME/dotfiles
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "$DOT/setup/utils.sh"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-install_pop_shell() {
-
-	print_in_purple "\n • Install pop shell \n\n"
-
-	sudo dnf install -y gnome-shell-extension-pop-shell
-
-}
+cd "$(dirname "${BASH_SOURCE[0]}")" &&
+	. "$DOT/setup/utils.sh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -23,7 +13,13 @@ install_fonts() {
 
 	sudo dnf install -y fira-code-fonts 'mozilla-fira*' 'google-roboto*'
 
-	git clone git@github.com:BadassHenkka/comic-code-fonts.git ~/
+    # Installing fonts for dotfiles/fonts
+
+	mkdir -p ~/.local/share/fonts
+	
+	find ~/dotfiles/fonts -type f \( -iname "*.ttf" -o -iname "*.otf" \) -exec cp {} ~/.local/share/fonts/ \;
+
+	sudo fc-cache -fv
 
 }
 
@@ -53,8 +49,6 @@ style_setup_help() {
 main() {
 
 	print_in_purple "\n • Start setting up OS theme...\n\n"
-
-	install_pop_shell
 
 	install_fonts
 

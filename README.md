@@ -23,6 +23,11 @@ These are the base "dotfiles" that I use for setting up a new freshly installed 
 - installs some neovim plugins
 - installs some misc gnome tweaks
 
+## 📝 Note
+
+- clone the dotfiles repo into your home directory
+- this scrip is ment to be used with Fedora 41
+
 ## ⚠️ Warning
 
 **This script will delete and overwrite all of your existing dotfiles.**
