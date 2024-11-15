@@ -5,6 +5,19 @@
 ```
 git clone https://github.com/HiIamChaitanya/dotfiles.git
 ```
+## TO-DOs
+
+- adding wrap terminal config
+- adding alacritty config
+- adding config for FreeCad and kicad , ngspice
+- adding config for vscode and zed
+- docker config & podman
+- release scrip for fedora installer
+- add fonts to the list
+- GTK config with extensions and themes ,keybindings
+- add neovim configs
+- adding tilling manager config from current main workstation
+- also adding config for thinkpad and local servers
 
 
 ## ❔ What does this do?
