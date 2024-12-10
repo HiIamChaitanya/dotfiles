@@ -20,28 +20,39 @@ dev_tools_group() {
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# KITTY TERMINAL EMULATOR
+install_and_configure_stow() {
+    # Install Stow
+    if command -v apt-get &> /dev/null; then
+        sudo apt-get update
+        sudo apt-get install -y stow
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y stow
+    elif command -v yum &> /dev/null; then
+        sudo yum install -y stow
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -Sy stow
+    else
+        echo "Unable to detect package manager. Please install Stow manually."
+        return 1
+    fi
 
-install_terminal_and_prompt() {
+    # Create Stow directory
+    sudo mkdir -p /usr/local/stow
 
-        print_in_purple "\n • Installing kitty terminal emulator and starship prompt \n\n"
+    # Configure Stow alias
+    echo "alias stow='sudo STOW_DIR=/usr/local/stow /usr/bin/stow'" >> ~/.bashrc
 
-        # download and setup some additional fonts for kitty & starship prompt
-        sudo mkdir /usr/share/fonts/nerd-fonts
-        curl https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraMono.zip -o FiraMono.zip \
-            && sudo unzip FiraMono.zip -d /usr/share/fonts/nerd-fonts
+    # Reload .bashrc
+    source ~/.bashrc
 
-        sudo dnf install -y kitty
-
-        mkdir ~/.config/kitty
-        ln ~/dotfiles/kitty/kitty.conf ~/.config/kitty/kitty.conf
-
+    echo "GNU Stow has been installed and configured."
+    echo "Stow directory: /usr/local/stow"
+    echo "Stow alias added to ~/.bashrc"
 }
-
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# TYPESCRIPT
+# TYPESCRIPT 
 
 install_typescript() {
 
@@ -87,10 +98,40 @@ install_misc_tools() {
 
     print_in_purple "\n • Installing miscallenous useful tools\n\n"
 
-    sudo dnf install -y cronie
     sudo dnf install -y lazygit
     sudo dnf install -y tldr
 
+    sudo dnf install -y neofetch
+
+    sudo dnf install -y htop
+
+    sudo dnf install -y s
+
+}
+
+# ----------------------------------------------------------------------
+
+install_starship_for_fish() {
+    echo "Installing Starship..."
+    
+    # Install Starship
+    curl -sS https://starship.rs/install.sh | sh
+
+    # Check if installation was successful
+    if ! command -v starship &> /dev/null; then
+        echo "Starship installation failed. Please check your internet connection and try again."
+        return 1
+    fi
+
+    # Configure Starship for Fish shell
+    if [ ! -d ~/.config/fish ]; then
+        mkdir -p ~/.config/fish
+    fi
+
+    echo "starship init fish | source" >> ~/.config/fish/config.fish
+
+    echo "Starship has been installed and configured for Fish shell."
+    echo "Please restart your Fish shell or run 'source ~/.config/fish/config.fish' to apply changes."
 }
 
 # ----------------------------------------------------------------------
@@ -100,14 +141,18 @@ install_misc_tools() {
 main() {
 
 	dev_tools_group
-
-    install_terminal_and_prompt
-
+ 
+    install_and_configure_stow
+ 
     install_typescript
+    
+    install_bun
 
     install_VSCode_and_set_inotify_max_user_watches
 
     install_misc_tools
+
+    install_starship_for_fish
 
 }
 

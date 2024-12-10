@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "setup/utils.sh" && . "os/settings.sh"
+cd "$(dirname "${BASH_SOURCE[0]}")" &&
+    . "setup/utils.sh" && . "os/settings.sh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -18,40 +18,6 @@ init_fedora_setup() {
     ./os/fedora/init_fedora_setup.sh
 
     print_in_green "\n • Initial setup done! \n\n"
-
-    sleep 5
-
-}
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# BASH AND GIT CONFIGS
-
-bash_and_git_configs() {
-
-    print_in_purple "\n • Create bash and git files with symlinks + local config files for each \n\n"
-
-    /bin/bash -c "$(curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o ~/.git-completion.bash)"
-
-    ./setup/create_symbolic_links.sh
-    ./shell/create_local_shellconfig.sh
-    ./git/create_local_gitconfig.sh
-
-    print_in_green "\n • Bash and git configs done! \n\n"
-
-    sleep 5
-
-}
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# GITHUB SSH KEY
-
-create_and_set_github_ssh_key() {
-
-    ./git/set_github_ssh_key.sh
-
-    print_in_green "\n • Github ssh key creation done! \n\n"
 
     sleep 5
 
@@ -83,7 +49,7 @@ install_dev_packages() {
 
     ./os/dev_packages.sh
 
-    print_in_green "\n Dev packages installed! \n\n"
+    print_in_green "\n  Dev packages installed! \n\n"
 
     sleep 5
 
@@ -139,20 +105,59 @@ fedora_setup_final() {
 
     custom_keybindings
 
-    echo "
-        Gnome extensions:
-        https://extensions.gnome.org/extension/4158/gnome-40-ui-improvements/
-        https://extensions.gnome.org/extension/6/applications-menu/
-        https://extensions.gnome.org/extension/6682/astra-monitor/
-        https://extensions.gnome.org/extension/307/dash-to-dock/
-        https://extensions.gnome.org/extension/1319/gsconnect/
-        https://extensions.gnome.org/extension/277/impatience/
-        https://extensions.gnome.org/extension/3193/blur-my-shell/
-        https://extensions.gnome.org/extension/19/user-themes/
-    "
-
     print_in_green "\n • All done! Install the suggested extensions and restart. \n"
 
+}
+
+# ---------------------------------------------------------------------
+
+install_nvidia_drivers() {
+
+    print_in_purple "\n •Check for Installing  NVIDIA GPU drivers\n\n"
+
+    # Check for NVIDIA GPU
+    if lspci | grep -i nvidia >/dev/null; then
+        echo "NVIDIA GPU detected. Installing drivers..."
+
+        # Enable RPM Fusion repositories
+        sudo dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+        sudo dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+
+        # Update package cache
+        sudo dnf update -y
+
+        # Install NVIDIA drivers and necessary packages
+        sudo dnf install -y akmod-nvidia xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs
+
+        # For CUDA support (optional)
+        sudo dnf install -y xorg-x11-drv-nvidia-cuda
+
+        echo "NVIDIA drivers installed. Please reboot your system to apply changes."
+    else
+        echo "No NVIDIA GPU detected. Skipping driver installation."
+    fi
+}
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ask_reboot() {
+    while true; do
+        read -p "Do you want to reboot the system now? (y/n): " choice
+        case "$choice" in 
+            y|Y ) 
+                echo "Rebooting the system..."
+                sudo reboot
+                break
+                ;;
+            n|N ) 
+                echo "Reboot cancelled. Please remember to reboot later for changes to take effect."
+                break
+                ;;
+            * ) 
+                echo "Invalid input. Please enter 'y' for yes or 'n' for no."
+                ;;
+        esac
+    done
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -167,10 +172,6 @@ main() {
 
     init_fedora_setup
 
-    bash_and_git_configs
-
-    create_and_set_github_ssh_key
-
     install_extensions_and_pkg_managers
 
     install_dev_packages
@@ -180,6 +181,10 @@ main() {
     install_apps
 
     fedora_setup_final
+
+    install_nvidia_drivers
+
+    ask_reboot
 
 }
 

@@ -6,13 +6,32 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "$DOT/setup/utils.sh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+installing TLP 
+is_laptop() {
+    if [ -f "/sys/class/dmi/id/chassis_type" ]; then
+        chassis_type=$(cat /sys/class/dmi/id/chassis_type)
+        case $chassis_type in
+            8|9|10|11)
+                return 0  # It's a laptop
+                ;;
+            *)
+                return 1  # It's not a laptop
+                ;;
+        esac
+    else
+        return 1  # Unable to determine, assume it's not a laptop
+    fi
+}
 
 install_tlp_battery_management() {
-
+    if is_laptop; then
+        echo "This is a laptop. Installing TLP..."
         print_in_purple "\n • Installing tlp battery management \n\n"
 
         sudo dnf install -y tlp tlp-rdw
-
+    else
+        echo "This Device is not a laptop. TLP installation skipped."
+    fi
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -36,6 +55,7 @@ install_VLC() {
         print_in_purple "\n • Installing VLC \n\n"
 
         sudo dnf install -y vlc
+        sudo dnf install -y mpv
 
 }
 
@@ -65,7 +85,7 @@ install_chrome() {
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-install_kicad()P{
+Install_KiCad_FreeCad() {
         print_in_purple "\n • Installing KiCad & FreeCad \n\n"
 
         sudo dnf install kicad -y
@@ -73,6 +93,22 @@ install_kicad()P{
         sudo dnf install freecad -y
 }
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 # ----------------------------------------------------------------------
@@ -90,6 +126,8 @@ main() {
         install_ulauncher
 
         install_chrome
+
+        Install_KiCad_FreeCad
 
 }
 

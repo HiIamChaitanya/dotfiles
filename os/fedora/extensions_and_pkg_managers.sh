@@ -47,6 +47,33 @@ install_gnome_tweaks() {
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+install_gnome_extensions() {
+
+   	print_in_purple "\n • Installing GNOME Extensions\n\n"
+
+
+    local extensions=(
+        "4158" # GNOME 40 UI Improvements
+        "6"    # Applications Menu
+        "6682" # Astra Monitor
+        "307"  # Dash to Dock
+        "1319" # GSConnect
+        "277"  # Impatience
+        "3193" # Blur My Shell
+        "19"   # User Themes
+    )
+
+    for ext_id in "${extensions[@]}"; do
+        echo "Installing extension with ID: $ext_id"
+        busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions org.gnome.Shell.Extensions InstallRemoteExtension s "$ext_id"
+        sleep 2
+    done
+
+    echo "All extensions have been installed. You may need to restart GNOME Shell or log out and back in for changes to take effect."
+}
+
+# ---------------------------------------------------------------------- 
+
 # ----------------------------------------------------------------------
 # | Main                                                               |
 # ----------------------------------------------------------------------
@@ -58,6 +85,8 @@ main() {
 	add_flatpak_store_and_update
 
 	install_gnome_tweaks
+
+	install_gnome_extensions
 
 }
 
