@@ -2,7 +2,8 @@
 
 ## install
 
-``` 
+```
+bash <(curl -Ls https://raw.githubusercontent.com/HiIamChaitanya/dotfiles/refs/heads/main/setup.sh) 
 ```
 
 ## TO-DOs
