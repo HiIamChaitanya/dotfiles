@@ -2,9 +2,9 @@
 
 ## install
 
+``` 
 ```
-git clone https://github.com/HiIamChaitanya/dotfiles.git
-```
+
 ## TO-DOs
 
 - adding wrap terminal config
@@ -18,7 +18,6 @@ git clone https://github.com/HiIamChaitanya/dotfiles.git
 - add neovim configs
 - adding tilling manager config from current main workstation
 - also adding config for thinkpad and local servers
-
 
 ## ❔ What does this do?
 
