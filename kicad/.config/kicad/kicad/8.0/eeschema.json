@@ -11,15 +11,15 @@
   "appearance": {
     "color_theme": "_builtin_default",
     "default_font": "KiCad Font",
-    "edit_label_height": -1,
+    "edit_label_height": 476,
     "edit_label_visible_columns": "0 1 2 3 4 5 6 7",
-    "edit_label_width": -1,
+    "edit_label_width": 975,
     "edit_sheet_height": -1,
     "edit_sheet_visible_columns": "0 1 2 3 4 5 6 7",
     "edit_sheet_width": -1,
-    "edit_symbol_height": -1,
+    "edit_symbol_height": 598,
     "edit_symbol_visible_columns": "0 1 2 3 4 5 6 7",
-    "edit_symbol_width": -1,
+    "edit_symbol_width": 1116,
     "erc_severities": 48,
     "footprint_preview": true,
     "print_sheet_reference": true,
@@ -120,7 +120,7 @@
       9.0,
       12.0
     ],
-    "line_mode": 1,
+    "line_mode": 0,
     "pin_symbol_size": 25,
     "repeat_label_increment": 1,
     "text_offset_ratio": 0.08
@@ -135,8 +135,10 @@
     "width": 0
   },
   "find_replace": {
-    "find_history": [],
-    "find_string": "",
+    "find_history": [
+      "10K"
+    ],
+    "find_string": "10K",
     "match_case": false,
     "match_mode": 0,
     "replace_history": [],
@@ -166,8 +168,14 @@
     "esc_clears_net_highlight": true
   },
   "lib_tree": {
-    "column_widths": null,
-    "columns": [],
+    "column_widths": {
+      "Description": 600,
+      "Item": 300
+    },
+    "columns": [
+      "Item",
+      "Description"
+    ],
     "open_libs": []
   },
   "lib_view": {
@@ -235,34 +243,39 @@
     "thickness": 3
   },
   "simulator": {
-    "cursors_panel_height": 0,
-    "measurements_panel_height": 0,
-    "plot_panel_height": 0,
-    "plot_panel_width": 0,
-    "signal_panel_height": 0,
+    "cursors_panel_height": 171,
+    "measurements_panel_height": 113,
+    "plot_panel_height": 717,
+    "plot_panel_width": 526,
+    "signal_panel_height": 374,
     "white_background": false,
     "window": {
       "display": 0,
       "maximized": false,
-      "perspective": "",
-      "pos_x": 0,
-      "pos_y": 0,
-      "size_x": 500,
-      "size_y": 400
+      "perspective": "layout2|",
+      "pos_x": 1963,
+      "pos_y": 25,
+      "size_x": 839,
+      "size_y": 1055
     }
   },
   "symbol_chooser": {
-    "height": -1,
+    "height": 680,
     "keep_symbol": false,
     "place_all_units": true,
-    "sash_pos_h": -1,
-    "sash_pos_v": -1,
+    "sash_pos_h": 440,
+    "sash_pos_v": 460,
     "sort_mode": 0,
-    "width": -1
+    "width": 880
   },
   "system": {
     "file_history": [
-      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board.kicad_sch"
+      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board.kicad_sch",
+      "/home/chaitanya/projects/hardware-projects/router-ups/pcb/ups-board/ups-board.kicad_sch",
+      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/power-supply/power-supply.kicad_sch",
+      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board/main-board/main-board.kicad_sch",
+      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board/main-board.kicad_sch",
+      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board/main-board.kicad_sch-bak"
     ],
     "first_run_shown": false,
     "last_imperial_units": 5,
@@ -327,11 +340,11 @@
     },
     "maximized": true,
     "mru_path": "",
-    "perspective": "layout2|name=InfoBar;caption=;state=131454;dir=1;layer=1;row=0;pos=0;prop=100000;bestw=20;besth=30;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=MainToolbar;caption=;state=139632;dir=1;layer=6;row=0;pos=0;prop=100000;bestw=1204;besth=34;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=MsgPanel;caption=;state=131452;dir=3;layer=6;row=0;pos=0;prop=100000;bestw=400;besth=36;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=SchematicHierarchy;caption=Schematic Hierarchy;state=2099148;dir=4;layer=3;row=0;pos=0;prop=100000;bestw=300;besth=200;minw=120;minh=60;maxw=-1;maxh=-1;floatx=693;floaty=237;floatw=200;floath=200|name=PropertiesManager;caption=Properties;state=2099148;dir=4;layer=3;row=0;pos=1;prop=100000;bestw=300;besth=200;minw=240;minh=60;maxw=-1;maxh=-1;floatx=50;floaty=200;floatw=300;floath=400|name=NetNavigator;caption=Net Navigator;state=2099150;dir=4;layer=3;row=0;pos=0;prop=100000;bestw=200;besth=200;minw=120;minh=60;maxw=-1;maxh=-1;floatx=50;floaty=200;floatw=200;floath=200|name=OptToolbar;caption=;state=139596;dir=4;layer=2;row=0;pos=0;prop=100000;bestw=34;besth=460;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=ToolsToolbar;caption=;state=139596;dir=2;layer=2;row=0;pos=0;prop=100000;bestw=34;besth=762;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=DrawFrame;caption=;state=1020;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=400;besth=159;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Search;caption=Search;state=2098686;dir=3;layer=0;row=0;pos=0;prop=100000;bestw=180;besth=100;minw=180;minh=60;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=480;floath=200|dock_size(1,6,0)=34|dock_size(3,6,0)=36|dock_size(4,3,0)=302|dock_size(4,2,0)=34|dock_size(2,2,0)=34|dock_size(5,0,0)=384|",
-    "pos_x": 341,
-    "pos_y": 192,
-    "size_x": 1280,
-    "size_y": 720,
+    "perspective": "layout2|name=InfoBar;caption=;state=131454;dir=1;layer=1;row=0;pos=0;prop=100000;bestw=20;besth=30;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=MainToolbar;caption=;state=139632;dir=1;layer=6;row=0;pos=0;prop=100000;bestw=1204;besth=34;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=MsgPanel;caption=;state=131452;dir=3;layer=6;row=0;pos=0;prop=100000;bestw=400;besth=36;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=SchematicHierarchy;caption=Schematic Hierarchy;state=2099148;dir=4;layer=3;row=0;pos=0;prop=100000;bestw=300;besth=200;minw=120;minh=60;maxw=-1;maxh=-1;floatx=704;floaty=157;floatw=200;floath=200|name=PropertiesManager;caption=Properties;state=2099148;dir=4;layer=3;row=0;pos=1;prop=100000;bestw=300;besth=200;minw=240;minh=60;maxw=-1;maxh=-1;floatx=50;floaty=200;floatw=300;floath=400|name=NetNavigator;caption=Net Navigator;state=2099150;dir=4;layer=3;row=0;pos=0;prop=100000;bestw=200;besth=200;minw=120;minh=60;maxw=-1;maxh=-1;floatx=50;floaty=200;floatw=200;floath=200|name=OptToolbar;caption=;state=139596;dir=4;layer=2;row=0;pos=0;prop=100000;bestw=34;besth=460;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=ToolsToolbar;caption=;state=139596;dir=2;layer=2;row=0;pos=0;prop=100000;bestw=34;besth=762;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=DrawFrame;caption=;state=1020;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=400;besth=159;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Search;caption=Search;state=2098686;dir=3;layer=0;row=0;pos=0;prop=100000;bestw=180;besth=100;minw=180;minh=60;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=480;floath=200|dock_size(1,6,0)=34|dock_size(3,6,0)=36|dock_size(4,3,0)=302|dock_size(4,2,0)=34|dock_size(2,2,0)=34|dock_size(5,0,0)=377|",
+    "pos_x": 352,
+    "pos_y": 112,
+    "size_x": 1259,
+    "size_y": 791,
     "zoom_factors": [
       0.05,
       0.07,

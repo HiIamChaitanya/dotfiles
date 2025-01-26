@@ -32,7 +32,7 @@
     "useDefaultAuthor": true
   },
   "graphics": {
-    "cairo_antialiasing_mode": 0,
+    "cairo_antialiasing_mode": 1,
     "opengl_antialiasing_mode": 1
   },
   "input": {
@@ -63,7 +63,7 @@
     "sash_pos": 160
   },
   "package_manager": {
-    "sash_pos": 384
+    "sash_pos": 380
   },
   "session": {
     "pinned_fp_libs": [],
