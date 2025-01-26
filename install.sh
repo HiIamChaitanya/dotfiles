@@ -1,4 +1,27 @@
+# This script automates the setup of a fresh Fedora OS for development work and personal use.
+# It includes functions for initial setup, installing extensions and package managers,
+# installing development packages, setting up OS themes and terminal tweaks, installing applications,
+# installing NVIDIA drivers, and prompting for a system reboot.
+
+# Functions:
+# - init_fedora_setup: Performs initial Fedora setup including basic DNF settings, upgrades, and firmware updates.
+# - install_extensions_and_pkg_managers: Installs basic extensions and package managers.
+# - install_dev_packages: Installs development packages.
+# - setup_os_theme_and_terminal_style: Sets up OS theme and terminal tweaks.
+# - install_apps: Installs various applications.
+# - fedora_setup_final: Performs cleanup, sources .bashrc, and applies final tweaks.
+# - install_nvidia_drivers: Checks for NVIDIA GPU and installs appropriate drivers if detected.
+# - ask_reboot: Prompts the user to reboot the system to apply changes.
+
+# Main function:
+# - main: Executes the full setup process by calling the above functions in sequence.
+
+# Usage:
+# - Run the script without arguments to execute the full setup process.
+# - Pass a function name as an argument to execute that specific function.
 #!/bin/bash
+
+set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")" &&
     . "setup/utils.sh" && . "os/settings.sh"
@@ -192,8 +215,9 @@ main() {
 
 # Allow calling single functions in script and run main if nothing is specified
 
-"$@"
-
-if [ "$1" == "" ]; then
+if [ -n "$1" ]; then
+    "$@"
+else
     main
 fi
+

@@ -4,7 +4,7 @@ cd
 
 # clone dotfile repo to $HOME
 
-git clone https://github.com/HiIamChaitanya/dotfiles.git --depth=1 
+git clone https://github.com/HiIamChaitanya/dotfiles.git --depth=1 ~/
 
 cd dotfiles/ 
 
@@ -13,5 +13,3 @@ cd dotfiles/
 chmod +x install.sh
 
  ./install.sh
-
-sudo dnf update -y --refresh
