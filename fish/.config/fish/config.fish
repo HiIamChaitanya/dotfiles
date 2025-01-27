@@ -12,3 +12,10 @@ colorscript -r
 
 set -g fish_greeting
 
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH
+
+# rust
+source "$HOME/.cargo/env.fish"
