@@ -8,17 +8,10 @@ bash <(curl -Ls https://raw.githubusercontent.com/HiIamChaitanya/dotfiles/refs/h
 
 ## TO-DOs
 
-- adding wrap terminal config
-- adding alacritty config
-- adding config for FreeCad and kicad , ngspice
-- adding config for vscode and zed
-- docker config & podman
-- release scrip for fedora installer
 - add fonts to the list
-- GTK config with extensions and themes ,keybindings
-- add neovim configs
-- adding tilling manager config from current main workstation
-- also adding config for thinkpad and local servers
+- GTK config with extensions and themes ,keybindings ,etc.
+- adding tilling manager config from current main workstation with wayland.
+- adding nixpkg
 
 ## ❔ What does this do?
 
