@@ -1,20 +1,25 @@
 #!/bin/bash
 
-cd ~/dotfiles/gnome-themes 
+readonly THEME_DIR="$HOME/dotfiles/gnome-themes"
+readonly THEME_NAME="WhiteSur-gtk-theme"
+readonly THEME_REPO="https://github.com/vinceliuice/$THEME_NAME.git"
 
-# Install Gnome theme 
-git clone https://github.com/vinceliuice/WhiteSur-gtk-theme.git --depth=1
+# Clone the theme repository
+git clone --depth=1 "$THEME_REPO" "$THEME_DIR/$THEME_NAME"
 
-cd ~/dotfiles/gnome-themes/WhiteSur-gtk-theme 
-
+# Install the theme
+cd "$THEME_DIR/$THEME_NAME"
 chmod +x install.sh
-
 ./install.sh -c dark --shell -i fedora -h smaller -sf -a all -m -l -HD --round --darker
 
-chmod +x tweak.sh
-
+# Tweak the theme
+chmod +x tweaks.sh
 ./tweaks.sh -F -c dark
 
-sudo flatpak override --filesystem=xdg-config/gtk-3.0 && sudo flatpak override --filesystem=xdg-config/gtk-4.0
+# Allow flatpak to use the theme
+sudo flatpak override --filesystem=xdg-config/gtk-3.0
+sudo flatpak override --filesystem=xdg-config/gtk-4.0
 
-cd .. && rm -rf WhiteSur-gtk-theme
+# Clean up
+cd .. && rm -rf "$THEME_NAME"
+
