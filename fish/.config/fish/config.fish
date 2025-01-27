@@ -1,17 +1,14 @@
 if status is-interactive
     # Commands to run in interactive sessions can go here
+
+    # get random art
+    colorscript -r
 end
 
 # ~/.config/fish/config.fish
 
+# starship
 starship init fish | source
-
-# get random art
-colorscript -r
-
-
-set -g fish_greeting
-
 
 # bun
 set --export BUN_INSTALL "$HOME/.bun"

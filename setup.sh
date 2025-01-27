@@ -1,15 +1,14 @@
 #!/bin/bash
 
-cd 
+________          __    _____.__.__                 
+\______ \   _____/  |__/ ____\__|  |   ____   ______
+ |    |  \ /  _ \   __\   __\|  |  | _/ __ \ /  ___/
+ |    `   (  <_> )  |  |  |  |  |  |_\  ___/ \___ \ 
+/_______  /\____/|__|  |__|  |__|____/\___  >____  >
+        \/                                \/     \/ 
 
 # clone dotfile repo to $HOME
-
-git clone https://github.com/HiIamChaitanya/dotfiles.git --depth=1 ~/
-
-cd dotfiles/ 
+git clone --depth=1 https://github.com/HiIamChaitanya/dotfiles.git ~/dotfiles
 
 # install dotfiles
-
-chmod +x install.sh
-
- ./install.sh
+~/dotfiles/install.sh

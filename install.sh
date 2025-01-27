@@ -1,141 +1,61 @@
-# This script automates the setup of a fresh Fedora OS for development work and personal use.
-# It includes functions for initial setup, installing extensions and package managers,
-# installing development packages, setting up OS themes and terminal tweaks, installing applications,
-# installing NVIDIA drivers, and prompting for a system reboot.
-
-# Functions:
-# - init_fedora_setup: Performs initial Fedora setup including basic DNF settings, upgrades, and firmware updates.
-# - install_extensions_and_pkg_managers: Installs basic extensions and package managers.
-# - install_dev_packages: Installs development packages.
-# - setup_os_theme_and_terminal_style: Sets up OS theme and terminal tweaks.
-# - install_apps: Installs various applications.
-# - fedora_setup_final: Performs cleanup, sources .bashrc, and applies final tweaks.
-# - install_nvidia_drivers: Checks for NVIDIA GPU and installs appropriate drivers if detected.
-# - ask_reboot: Prompts the user to reboot the system to apply changes.
-
-# Main function:
-# - main: Executes the full setup process by calling the above functions in sequence.
-
-# Usage:
-# - Run the script without arguments to execute the full setup process.
-# - Pass a function name as an argument to execute that specific function.
 #!/bin/bash
 
 set -euo pipefail
 
+# Import utils and settings
 cd "$(dirname "${BASH_SOURCE[0]}")" &&
     . "setup/utils.sh" && . "os/settings.sh"
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# ----------------------------------------------------------------------
-# | Functions for fresh Fedora OS setup for development                |
-# ----------------------------------------------------------------------
-
-# BASIC DNF SETTINGS + UPGRADES AND DEVICE FIRMWARE UPDATES
-
+# Functions
 init_fedora_setup() {
-
     print_in_purple "\n • Starting initial Fedora setup \n\n"
-
     ./os/fedora/init_fedora_setup.sh
-
     print_in_green "\n • Initial setup done! \n\n"
-
     sleep 5
-
 }
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# BASIC EXTENSIONS AND PACKAGE MANAGERS
 
 install_extensions_and_pkg_managers() {
-
     print_in_purple "\n • Installing basic extensions and pkg managers \n\n"
-
     ./os/fedora/extensions_and_pkg_managers.sh
-
     print_in_green "\n • Finished installing basic extensions and pkg managers! \n\n"
-
     sleep 5
-
 }
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# DEV PACKAGES
 
 install_dev_packages() {
-
     print_in_purple "\n • Installing dev packages \n\n"
-
     ./os/dev_packages.sh
-
     print_in_green "\n  Dev packages installed! \n\n"
-
     sleep 5
-
 }
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# OS THEME SETUP + TERMINAL TWEAKS
 
 setup_os_theme_and_terminal_style() {
-
     print_in_purple "\n • Setting up OS theme and terminal tweaks \n\n"
-
     ./os/theme/main.sh
-
     print_in_green "\n Theme and terminal setup done! \n\n"
-
     sleep 5
-
 }
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# APP INSTALLATION
 
 install_apps() {
-
     print_in_purple "\n • Installing applications \n\n"
-
     ./os/apps.sh
-
     print_in_green "\n Apps installed! \n\n"
-
     sleep 5
-
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 fedora_setup_final() {
-
     # cleanup
-
     sudo dnf autoremove
 
-    source ~/.bashrc
-
     # final tweaks
-
+    source ~/.bashrc
     general_settings_tweaks
-
     custom_workspace_keybindings
-
     custom_keybindings
 
     print_in_green "\n • All done! Install the suggested extensions and restart. \n"
-
 }
 
-# ---------------------------------------------------------------------
-
 install_nvidia_drivers() {
-
     print_in_purple "\n •Check for Installing  NVIDIA GPU drivers\n\n"
 
     # Check for NVIDIA GPU
@@ -161,59 +81,36 @@ install_nvidia_drivers() {
     fi
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 ask_reboot() {
     while true; do
         read -p "Do you want to reboot the system now? (y/n): " choice
-        case "$choice" in 
-            y|Y ) 
+        case "$choice" in
+            y|Y)
                 echo "Rebooting the system..."
                 sudo reboot
                 break
                 ;;
-            n|N ) 
+            n|N)
                 echo "Reboot cancelled. Please remember to reboot later for changes to take effect."
                 break
                 ;;
-            * ) 
+            *)
                 echo "Invalid input. Please enter 'y' for yes or 'n' for no."
                 ;;
         esac
     done
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# ----------------------------------------------------------------------
-# | Main                                                               |
-# ----------------------------------------------------------------------
-
-# THE FULL SETUP PROCESS
-
 main() {
-
     init_fedora_setup
-
     install_extensions_and_pkg_managers
-
     install_dev_packages
-
     setup_os_theme_and_terminal_style
-
     install_apps
-
     fedora_setup_final
-
     install_nvidia_drivers
-
     ask_reboot
-
 }
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# Allow calling single functions in script and run main if nothing is specified
 
 if [ -n "$1" ]; then
     "$@"
