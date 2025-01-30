@@ -1,38 +1,29 @@
 #!/bin/bash
 
-general_settings_tweaks() {
+set -e
 
+apply_general_gnome_tweaks() {
     print_in_purple "\n • General Gnome tweaks... \n\n"
 
-    echo "
-        Disable suspend when laptop lid is closed in Tweaks General.
-    "
-
     gsettings set org.gnome.desktop.interface enable-hot-corners false
-
     gsettings set org.gnome.desktop.interface clock-show-date true
-
     gsettings set org.gnome.desktop.interface clock-show-weekday true
-
     gsettings set org.gnome.desktop.interface show-battery-percentage true
 
+    echo "Disable suspend when laptop lid is closed in Tweaks General."
 }
 
-
-
-custom_keybindings() {
-
-    dconf load / < $HOME/dotfiles/os/custom-keybindings.conf
-
+load_custom_keybindings() {
+    if [[ -f "$HOME/dotfiles/os/custom-keybindings.conf" ]]; then
+        dconf load / < "$HOME/dotfiles/os/custom-keybindings.conf"
+    else
+        echo "Custom keybindings configuration file not found."
+    fi
 }
-
 
 main() {
-
-    general_settings_tweaks
-
-    custom_keybindings
-
+    apply_general_gnome_tweaks
+    load_custom_keybindings
 }
 
 main
