@@ -1,0 +1,20 @@
+theme = Dark+
+font-size = 13
+font-family = JetBrainsMono Nerd Font
+shell-integration-features = no-cursor,no-title
+cursor-style = block
+background-opacity = 0.965
+mouse-hide-while-typing = true
+mouse-scroll-multiplier = 2
+window-theme = ghostty
+window-width = 1280
+window-height = 720
+window-padding-x = 15
+window-padding-y = 10
+window-decoration = true
+window-colorspace = "display-p3"
+gtk-adwaita = false
+gtk-titlebar = true
+adw-toolbar-style = "flat"
+bold-is-bright = true
+
