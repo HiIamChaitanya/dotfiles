@@ -1,137 +1,111 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-declare DOT=$HOME/dotfiles
+set -euo pipefail
 
-cd "$(dirname "${BASH_SOURCE[0]}")" \
-    && . "$DOT/setup/utils.sh"
+declare DOT="$HOME/dotfiles"
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Source utility functions
+source "$(dirname "${BASH_SOURCE[0]}")/$DOT/setup/utils.sh"
 
-# DEV TOOLS
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-dev_tools_group() {
-
-    print_in_purple "\n • Installing dev tools and pkgs\n\n"
-
-    sudo yum groupinstall 'Development Tools'
+# Function to install development tools and packages
+install_dev_tools() {
+    print_in_purple "\n • Installing development tools and packages\n\n"
+    sudo dnf groupinstall 'Development Tools' -y
     sudo dnf install -y git gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel
-
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+# Function to install and configure GNU Stow
 install_and_configure_stow() {
-    # Install Stow
-    if command -v apt-get &> /dev/null; then
-        sudo apt-get update
-        sudo apt-get install -y stow
-    elif command -v dnf &> /dev/null; then
+    print_in_purple "\n • Installing and configuring GNU Stow\n\n"
+
+    if command -v apt-get &>/dev/null; then
+        sudo apt-get update && sudo apt-get install -y stow
+    elif command -v dnf &>/dev/null; then
         sudo dnf install -y stow
-    elif command -v yum &> /dev/null; then
+    elif command -v yum &>/dev/null; then
         sudo yum install -y stow
-    elif command -v pacman &> /dev/null; then
+    elif command -v pacman &>/dev/null; then
         sudo pacman -Sy stow
     else
         echo "Unable to detect package manager. Please install Stow manually."
         return 1
     fi
 
-    # Create Stow directory
+    # Create Stow directory and configure alias
     sudo mkdir -p /usr/local/stow
+    echo "alias stow='sudo STOW_DIR=/usr/local/stow /usr/bin/stow'" >>~/.bashrc
 
-    # Configure Stow alias
-    echo "alias stow='sudo STOW_DIR=/usr/local/stow /usr/bin/stow'" >> ~/.bashrc
-
-    # Reload .bashrc
+    # Reload .bashrc for changes to take effect
     source ~/.bashrc
 
     echo "GNU Stow has been installed and configured."
-    echo "Stow directory: /usr/local/stow"
-    echo "Stow alias added to ~/.bashrc"
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# TYPESCRIPT 
-
+# Function to install TypeScript globally
 install_typescript() {
-
-    print_in_purple "\n • Installing typescript globally\n\n"
-
+    print_in_purple "\n • Installing TypeScript globally\n\n"
     npm install -g typescript
-
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# BUN
-
+# Function to install Bun
 install_bun() {
+    print_in_purple "\n • Installing Bun\n\n"
+    curl -fsSL https://bun.sh/install | bash
+}
 
-    print_in_purple "\n • Installing bun \n\n"
+# Function to install Visual Studio Code and configure inotify settings
+install_vscode_and_configure_inotify() {
+    print_in_purple "\n • Installing Visual Studio Code\n\n"
 
-   curl -fsSL https://bun.sh/install | bash
+    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    echo "[code]
+name=Visual Studio Code
+baseurl=https://packages.microsoft.com/yumrepos/vscode
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo
+
+    sudo dnf check-update && sudo dnf install -y code
+
+    # Increase inotify user watches limit
+    echo 'fs.inotify.max_user_watches=524288' | sudo tee -a /etc/sysctl.conf
+    sudo sysctl --system
 
 }
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-install_VSCode_and_set_inotify_max_user_watches() {
-
-        print_in_purple "\n • Installing VSCode \n\n"
-
-        sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-        sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-        sudo dnf check-update
-        sudo dnf install -y code
-
-        echo 'fs.inotify.max_user_watches=524288' | sudo tee -a /etc/sysctl.conf
-        sudo sysctl -p
-
-}
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# MISC
-
+# Function to install miscellaneous useful tools
 install_misc_tools() {
+    print_in_purple "\n • Installing miscellaneous useful tools\n\n"
 
-    print_in_purple "\n • Installing miscallenous useful tools\n\n"
+    local tools=(
+        lazygit
+        tldr
+        neofetch
+        htop
+        s
+    )
 
-    sudo dnf install -y lazygit
-    sudo dnf install -y tldr
-
-    sudo dnf install -y neofetch
-
-    sudo dnf install -y htop
-
-    sudo dnf install -y s
-
+    sudo dnf install -y "${tools[@]}"
 }
 
-# ----------------------------------------------------------------------
-
+# Function to install Starship for Fish shell
 install_starship_for_fish() {
-    echo "Installing Starship..."
-    
-    # Install Starship
-    curl -sS https://starship.rs/install.sh | sh
+    print_in_purple "\n • Installing Starship...\n"
 
-    # Check if installation was successful
-    if ! command -v starship &> /dev/null; then
+    curl --proto '=https' --tlsv1.2 -sSf https://starship.rs/install.sh | sh
+
+    if ! command -v starship &>/dev/null; then
         echo "Starship installation failed. Please check your internet connection and try again."
         return 1
     fi
 
-    # Configure Starship for Fish shell
-    if [ ! -d ~/.config/fish ]; then
-        mkdir -p ~/.config/fish
-    fi
+    mkdir -p ~/.config/fish
 
-    echo "starship init fish | source" >> ~/.config/fish/config.fish
+    echo "starship init fish | source" >>~/.config/fish/config.fish
 
     echo "Starship has been installed and configured for Fish shell."
-    echo "Please restart your Fish shell or run 'source ~/.config/fish/config.fish' to apply changes."
 }
 
 # ----------------------------------------------------------------------
@@ -139,21 +113,14 @@ install_starship_for_fish() {
 # ----------------------------------------------------------------------
 
 main() {
-
-	dev_tools_group
- 
+    install_dev_tools
     install_and_configure_stow
- 
     install_typescript
-    
     install_bun
-
-    install_VSCode_and_set_inotify_max_user_watches
-
+    install_vscode_and_configure_inotify
     install_misc_tools
-
     install_starship_for_fish
 
 }
 
-main
+main "$@"
