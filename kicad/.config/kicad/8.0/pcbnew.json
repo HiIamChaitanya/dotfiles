@@ -553,8 +553,7 @@
     "background": false,
     "color_theme": "",
     "layers": [
-      31,
-      36,
+      0,
       44,
       45
     ],
@@ -581,7 +580,9 @@
   },
   "system": {
     "file_history": [
-      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board.kicad_pcb"
+      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board.kicad_pcb",
+      "/home/chaitanya/projects/hardware-projects/Linear_power_supply/pcb/transistor_board/board/board.kicad_pcb",
+      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board-rounded.kicad_pcb"
     ],
     "first_run_shown": false,
     "last_footprint3d_dir": "/usr/share/kicad/3dmodels/",
@@ -794,6 +795,6 @@
     ]
   },
   "zones": {
-    "net_sort_mode": -1
+    "net_sort_mode": 1
   }
 }

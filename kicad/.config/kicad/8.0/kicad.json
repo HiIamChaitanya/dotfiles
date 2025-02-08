@@ -59,16 +59,20 @@
   "system": {
     "check_for_kicad_updates": true,
     "file_history": [
-      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board.kicad_pro"
+      "/home/chaitanya/projects/hardware-projects/LS300-Lab-Power-Supply/PCB/Main PCB/main board/main board.kicad_pro",
+      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board.kicad_pro",
+      "/home/chaitanya/projects/hardware-projects/Linear_power_supply/pcb/transistor_board/board/transistor_schematic.kicad_pro",
+      "/home/chaitanya/projects/hardware-projects/Linear_power_supply/pcb/transistor_board/board/board.kicad_pro",
+      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board-rounded.kicad_pro"
     ],
     "first_run_shown": false,
     "last_imperial_units": 5,
     "last_metric_units": 1,
     "last_received_update": "",
-    "last_update_check_time": "2025-01-29T21:54:07",
+    "last_update_check_time": "2025-02-01T07:09:21",
     "max_undo_items": 0,
     "open_projects": [
-      "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board.kicad_pro"
+      "/home/chaitanya/projects/hardware-projects/LS300-Lab-Power-Supply/PCB/Main PCB/main board/main board.kicad_pro"
     ],
     "show_import_issues": true,
     "units": 1
@@ -216,12 +220,12 @@
       "user_grid_y": ""
     },
     "maximized": true,
-    "mru_path": "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/",
+    "mru_path": "/home/chaitanya/projects/hardware-projects/LS300-Lab-Power-Supply/PCB/Main PCB/main board/",
     "perspective": "layout2|name=MainToolbar;caption=;state=139596;dir=4;layer=2;row=0;pos=0;prop=100000;bestw=34;besth=227;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=ProjectTree;caption=Project Files;state=1532;dir=4;layer=1;row=0;pos=0;prop=100000;bestw=250;besth=-1;minw=250;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=Launcher;caption=Editors;state=508;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=582;besth=542;minw=582;minh=542;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|dock_size(4,2,0)=34|dock_size(4,1,0)=250|dock_size(5,0,0)=582|",
     "pos_x": 556,
     "pos_y": 282,
     "size_x": 871,
-    "size_y": 565,
+    "size_y": 533,
     "zoom_factors": []
   }
 }

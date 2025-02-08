@@ -166,9 +166,17 @@
     "esc_clears_net_highlight": true
   },
   "lib_tree": {
-    "column_widths": null,
-    "columns": [],
-    "open_libs": []
+    "column_widths": {
+      "Description": 600,
+      "Item": 300
+    },
+    "columns": [
+      "Item",
+      "Description"
+    ],
+    "open_libs": [
+      "Analog_ADC"
+    ]
   },
   "lib_view": {
     "cmp_list_width": 150,
@@ -252,16 +260,22 @@
     }
   },
   "symbol_chooser": {
-    "height": -1,
+    "height": 680,
     "keep_symbol": false,
     "place_all_units": true,
-    "sash_pos_h": -1,
-    "sash_pos_v": -1,
+    "sash_pos_h": 440,
+    "sash_pos_v": 460,
     "sort_mode": 0,
-    "width": -1
+    "width": 880
   },
   "system": {
     "file_history": [
+      "/home/chaitanya/projects/hardware-projects/LS300-Lab-Power-Supply/PCB/Main PCB/main board/main board.kicad_sch",
+      "/home/chaitanya/projects/hardware-projects/Linear_power_supply/pcb/transistor_board/board/transistor_schematic.sch",
+      "/home/chaitanya/projects/hardware-projects/Linear_power_supply/pcb/transistor_board/board/board.kicad_sch",
+      "/home/chaitanya/projects/hardware-projects/Linear_power_supply/pcb/rectifier_board/rectifier_schematic.sch",
+      "/home/chaitanya/projects/hardware-projects/Linear_power_supply/pcb/transistor_board/transistor_schematic.sch",
+      "/home/chaitanya/projects/hardware-projects/Linear_power_supply/pcb/rectifier_board/rectifier_schematic.kicad_sch",
       "/home/chaitanya/projects/hardware-projects/InatorStation/PCB/main-board/main-board.kicad_sch"
     ],
     "first_run_shown": false,
@@ -331,7 +345,7 @@
     "pos_x": 341,
     "pos_y": 192,
     "size_x": 1280,
-    "size_y": 720,
+    "size_y": 816,
     "zoom_factors": [
       0.05,
       0.07,

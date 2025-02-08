@@ -112,9 +112,4 @@ main() {
     ask_reboot
 }
 
-if [ -n "$1" ]; then
-    "$@"
-else
-    main
-fi
-
+main

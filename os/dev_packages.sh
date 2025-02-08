@@ -1,18 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -euo pipefail
 
 declare DOT="$HOME/dotfiles"
 
 # Source utility functions
-source "$(dirname "${BASH_SOURCE[0]}")/$DOT/setup/utils.sh"
-
+source "$DOT/setup/utils.sh"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Function to install development tools and packages
 install_dev_tools() {
     print_in_purple "\n • Installing development tools and packages\n\n"
-    sudo dnf groupinstall 'Development Tools' -y
+sudo dnf5 group install "Development Tools" -y
     sudo dnf install -y git gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel
 }
 
@@ -123,4 +122,4 @@ main() {
 
 }
 
-main "$@"
+main 
