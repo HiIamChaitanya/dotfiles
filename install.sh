@@ -81,6 +81,9 @@ install_nvidia_drivers() {
     fi
 }
 
+
+
+
 ask_reboot() {
     while true; do
         read -p "Do you want to reboot the system now? (y/n): " choice
@@ -110,7 +113,10 @@ main() {
     fedora_setup_final
     install_nvidia_drivers
     ask_reboot
+
 }
+
+
 
 if [ -n "$1" ]; then
     "$@"
