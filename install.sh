@@ -59,12 +59,12 @@ install_nvidia_drivers() {
     print_in_purple "\n •Check for Installing  NVIDIA GPU drivers\n\n"
 
     # Check for NVIDIA GPU
-    if lspci | grep -i nvidia >/dev/null; then
+    if lspci | grep -i nvidia &>/dev/null; then
         echo "NVIDIA GPU detected. Installing drivers..."
 
         # Enable RPM Fusion repositories
-        sudo dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-        sudo dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+        sudo dnf install -y "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
+        sudo dnf install -y "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
 
         # Update package cache
         sudo dnf update -y
@@ -76,6 +76,10 @@ install_nvidia_drivers() {
         sudo dnf install -y xorg-x11-drv-nvidia-cuda
 
         echo "NVIDIA drivers installed. Please reboot your system to apply changes."
+    elif lspci | grep -i "Advanced Micro Devices" &>/dev/null || lspci | grep -i "AMD" &>/dev/null; then
+        echo "AMD GPU detected. No need to install drivers manually on Fedora."
+        echo "Fedora already includes open-source AMD drivers. You're good to go!"
+
     else
         echo "No NVIDIA GPU detected. Skipping driver installation."
     fi
@@ -115,12 +119,4 @@ main() {
     ask_reboot
 
 }
-
-
-
-if [ -n "$1" ]; then
-    "$@"
-else
-    main
-fi
 

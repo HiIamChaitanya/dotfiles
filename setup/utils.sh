@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ask() {
+ask_question() {
     print_question "$1"
     read -r
 }
@@ -13,6 +13,10 @@ ask_for_confirmation() {
 
 answer_is_yes() {
     [[ "$REPLY" =~ ^[Yy]$ ]]
+}
+
+answer_is_no() {
+    [[ "$REPLY" =~ ^[Nn]$ ]]
 }
 
 cmd_exists() {
@@ -156,16 +160,3 @@ show_spinner() {
         fi
     done
 }
-
-# Example usage
-ask "What is your name?"
-echo "Hello, $(get_answer)!"
-
-ask_for_confirmation "Do you want to continue?"
-if answer_is_yes; then
-    echo "Continuing..."
-else
-    echo "Exiting..."
-fi
-
-execute "sleep 2" "Sleeping for 2 seconds"
