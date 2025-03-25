@@ -12,32 +12,32 @@ enable_extra_rpm_pkgs_and_non_free() {
 
     if ! command -v dnf &> /dev/null; then
         print_error "dnf package manager is not installed. This script is intended for Fedora systems."
-        exit 1
+       
     fi
 
     sudo rpm -Uvh https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm || {
         print_error "Failed to install RPM Fusion free repository."
-        exit 1
+        
     }
 
     sudo dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm || {
         print_error "Failed to install RPM Fusion non-free repository."
-        exit 1
+       
     }
 
     sudo dnf upgrade --refresh || {
         print_error "Failed to upgrade packages."
-        exit 1
+        
     }
 
     sudo dnf groupupdate -y core || {
         print_error "Failed to update core group."
-        exit 1
+       
     }
 
     sudo dnf install -y rpmfusion-free-release-tainted dnf-plugins-core fedora-workstation-repositories || {
         print_error "Failed to install additional repositories."
-        exit 1
+       
     }
 
     print_success "Extra RPM packages and non-free options enabled."
@@ -56,15 +56,9 @@ add_flatpak_store_and_update() {
         }
     fi
 
-    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || {
-        print_error "Failed to add Flathub repository."
-        exit 1
-    }
+    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo 
 
-    flatpak update -y || {
-        print_error "Failed to update Flatpak packages."
-        exit 1
-    }
+    flatpak update -y 
 
     print_success "Flatpak store added and updated."
 }
@@ -76,12 +70,12 @@ install_gnome_tweaks() {
 
     sudo dnf install -y gnome-tweaks gnome-shell-extension-appindicator || {
         print_error "Failed to install GNOME tweaks."
-        exit 1
+       
     }
 
     flatpak install -y flathub com.mattjakeman.ExtensionManager || {
         print_error "Failed to install Extension Manager from Flathub."
-        exit 1
+       
     }
 
     print_success "GNOME tweaks installed."
@@ -121,7 +115,7 @@ restart_gnome_shell() {
     print_in_purple "\n • Restarting GNOME Shell\n\n"
     busctl --user call org.gnome.Shell /org/gnome/Shell org.gnome.Shell Eval s 'Meta.restart("Restarting…")' || {
         print_error "Failed to restart GNOME Shell."
-        exit 1
+        
     }
 
     print_success "GNOME Shell restarted."

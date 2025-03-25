@@ -117,6 +117,11 @@ main() {
     fedora_setup_final
     install_nvidia_drivers
     ask_reboot
-
 }
+
+if [ -n "$1" ]; then
+    "$@"
+else
+    main
+fi
 

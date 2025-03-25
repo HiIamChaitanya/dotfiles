@@ -1,42 +1,20 @@
 #!/usr/bin/env bash
 
-# Script to install various desktop applications and utilities
-
 set -euo pipefail
 
 # Configuration
 DOT="$HOME/dotfiles"
 
-# Source utils.sh from the same directory as this script
-script_dir="$(dirname "${BASH_SOURCE[0]}")"
-source "$script_dir/utils.sh"
+# Source utility functions
+source "$(dirname "${BASH_SOURCE[0]}")/$DOT/setup/utils.sh"
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Function to check if the system is a laptop
-is_laptop() {
-    if [[ -f "/sys/class/dmi/id/chassis_type" ]]; then
-        local chassis_type
-        chassis_type=$(</sys/class/dmi/id/chassis_type)
-        case "$chassis_type" in
-            8 | 9 | 10 | 11) return 0 ;; # It's a laptop
-            *) return 1 ;;               # It's not a laptop
-        esac
-    fi
-    print_warning "Could not reliably determine if this is a laptop. Assuming it's not."
-    return 1 # Unable to determine, assume it's not a laptop
-}
-
-# Function to install a package using dnf
-install_dnf_package() {
-    local package="$1"
-    print_info "Installing $package..."
-    if command_exists dnf; then
-        sudo dnf install -y "$package"
-        print_success "$package installed."
-    else
-        print_warning "dnf not found. Please install $package manually."
-    fi
+# Function to install development tools and packages
+install_dev_tools() {
+    print_in_purple "\n • Installing development tools and packages\n\n"
+    sudo dnf groupinstall 'Development Tools' -y
+    sudo dnf install -y git gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel
 }
 
 # Function to install a DNF group
@@ -165,20 +143,14 @@ install_jupyterlab() {
 
 # Main function to orchestrate the installation process
 main() {
-    print_in_purple "\n ---------------------------------------------------\n"
-    print_in_purple "|         Installing Desktop Applications           |\n"
-    print_in_purple " ---------------------------------------------------\n\n"
+    install_dev_tools
+    install_and_configure_stow
+    install_typescript
+    install_bun
+    install_vscode_and_configure_inotify
+    install_misc_tools
+    install_starship_for_fish
 
-    install_tlp
-    install_multimedia_codecs
-    install_media_players
-    install_ulauncher
-    install_chrome
-    install_cad_software
-    install_jupyterlab
-
-    print_in_purple "\n • Desktop application installation complete!\n"
 }
 
-# Execute the main function if the script is run directly
 main "$@"
