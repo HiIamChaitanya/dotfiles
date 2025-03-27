@@ -8,55 +8,47 @@ cd "$(dirname "${BASH_SOURCE[0]}")" &&
 
 # Functions
 init_fedora_setup() {
-    print_in_purple "\n • Starting initial Fedora setup \n\n"
+    print_in_purple " • Starting initial Fedora setup "
     ./os/fedora/init_fedora_setup.sh
-    print_in_green "\n • Initial setup done! \n\n"
-    sleep 5
+    print_in_green " • Initial setup done! "
 }
 
 install_extensions_and_pkg_managers() {
-    print_in_purple "\n • Installing basic extensions and pkg managers \n\n"
+    print_in_purple " • Installing basic extensions and pkg managers "
     ./os/fedora/extensions_and_pkg_managers.sh
-    print_in_green "\n • Finished installing basic extensions and pkg managers! \n\n"
-    sleep 5
+    print_in_green " • Finished installing basic extensions and pkg managers! "
+    sleep 2
 }
 
 install_dev_packages() {
-    print_in_purple "\n • Installing dev packages \n\n"
+    print_in_purple " • Installing dev packages "
     ./os/dev_packages.sh
-    print_in_green "\n  Dev packages installed! \n\n"
-    sleep 5
+    print_in_green "  Dev packages installed! "
+    sleep 2
 }
 
 setup_os_theme_and_terminal_style() {
-    print_in_purple "\n • Setting up OS theme and terminal tweaks \n\n"
+    print_in_purple " • Setting up OS theme and terminal tweaks "
     ./os/theme/main.sh
-    print_in_green "\n Theme and terminal setup done! \n\n"
-    sleep 5
+    print_in_green " Theme and terminal setup done! "
+    sleep 2
 }
 
-install_apps() {
-    print_in_purple "\n • Installing applications \n\n"
-    ./os/apps.sh
-    print_in_green "\n Apps installed! \n\n"
-    sleep 5
-}
 
 fedora_setup_final() {
-    # cleanup
-    sudo dnf autoremove
+    # cleanup 
+    sudo dnf autoremove -y
 
-    # final tweaks
-    source ~/.bashrc
-    general_settings_tweaks
-    custom_workspace_keybindings
-    custom_keybindings
+   # Enable and start services
+   print_in_yellow " • Enabling and starting services "
 
+   # to do : add services to enable and start here
+    
     print_in_green "\n • All done! Install the suggested extensions and restart. \n"
 }
 
 install_nvidia_drivers() {
-    print_in_purple "\n •Check for Installing  NVIDIA GPU drivers\n\n"
+    print_in_purple " • Checking for NVIDIA GPU drivers"
 
     # Check for NVIDIA GPU
     if lspci | grep -i nvidia &>/dev/null; then
@@ -85,9 +77,6 @@ install_nvidia_drivers() {
     fi
 }
 
-
-
-
 ask_reboot() {
     while true; do
         read -p "Do you want to reboot the system now? (y/n): " choice
@@ -109,19 +98,17 @@ ask_reboot() {
 }
 
 main() {
-    init_fedora_setup
-    install_extensions_and_pkg_managers
-    install_dev_packages
-    setup_os_theme_and_terminal_style
-    install_apps
-    fedora_setup_final
-    install_nvidia_drivers
-    ask_reboot
+    init_fedora_setup || exit 1 
+    install_extensions_and_pkg_managers || exit 1
+    install_dev_packages || exit 1 
+    setup_os_theme_and_terminal_style || exit 1
+    fedora_setup_final  || exit 1
+    install_nvidia_drivers  || exit 1
+    ask_reboot  
 }
 
-if [ -n "$1" ]; then
-    "$@"
+if [ "$#" -gt 0 ]; then
+  "$@"
 else
-    main
+  main
 fi
-

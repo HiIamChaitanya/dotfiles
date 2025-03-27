@@ -1,8 +1,8 @@
 #!/bin/bash
 
-ask_question() {
+ask() {
     print_question "$1"
-    read -r
+    read -r REPLY
 }
 
 ask_for_confirmation() {
@@ -12,9 +12,7 @@ ask_for_confirmation() {
 }
 
 answer_is_yes() {
-    [[ "$REPLY" =~ ^[Yy]$ ]] \
-        && return 0 \
-        || return 1
+    [[ "$REPLY" =~ ^[Yy]$ ]]
 }
 
 answer_is_no() {
@@ -22,7 +20,7 @@ answer_is_no() {
 }
 
 cmd_exists() {
-    command -v "$1" &> /dev/null
+    command -v "$1" &>/dev/null
 }
 
 execute() {
@@ -30,50 +28,32 @@ execute() {
     local -r MSG="${2:-$1}"
     local -r TMP_FILE="$(mktemp /tmp/XXXXX)"
 
-    local exitCode=0
+    local exitCode
     local cmdsPID=""
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # If the current process is ended,
-    # also end all its subprocesses.
-    set_trap "EXIT" "kill_all_subprocesses"
+    trap "kill $cmdsPID 2>/dev/null" EXIT
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Execute commands in background
-    # shellcheck disable=SC2261
-    eval "$CMDS" \
-        &> /dev/null \
-        2> "$TMP_FILE" &
+    # Execute commands in background and redirect both stdout and stderr
+    eval "$CMDS" &>"$TMP_FILE" &
     cmdsPID=$!
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Show a spinner if the commands
-    # require more time to complete.
     show_spinner "$cmdsPID" "$CMDS" "$MSG"
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Wait for the commands to no longer be executing
-    # in the background, and then get their exit code.
 
-    wait "$cmdsPID" &> /dev/null
+    wait "$cmdsPID" 2>/dev/null
     exitCode=$?
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Print output based on what happened.
-
-    print_result $exitCode "$MSG"
-    if [ $exitCode -ne 0 ]; then
-        print_error_stream < "$TMP_FILE"
+    print_result "$exitCode" "$MSG"
+    if ((exitCode != 0)); then
+        print_error_stream <"$TMP_FILE"
     fi
 
     rm -rf "$TMP_FILE"
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    return $exitCode
+    return "$exitCode"
 }
 
 set_trap() {
-    trap -p "$1" | grep "$2" &> /dev/null \
-        || trap '$2' "$1"
+    trap -p "$1" | grep -q "$2" || trap "$2" "$1"
 }
 
 get_answer() {
@@ -84,14 +64,14 @@ get_os() {
     local os=""
     local kernelName=""
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     kernelName="$(uname -s)"
 
-    if [ "$kernelName" == "Darwin" ]; then
+    if [[ "$kernelName" == "Darwin" ]]; then
         os="macos"
-    elif [ "$kernelName" == "Linux" ] && \
-         [ -e "/etc/os-release" ]; then
-        os="$(. /etc/os-release; printf "%s" "$ID")"
+    elif [[ "$kernelName" == "Linux" ]] && [[ -e "/etc/os-release" ]]; then
+        . /etc/os-release
+        printf "%s" "$ID"
+        os="$ID"
     else
         os="$kernelName"
     fi
@@ -100,56 +80,76 @@ get_os() {
 }
 
 print_error() {
-    print_in_red "   [✖] $1 $2\n"
+    local message="$1"
+    local details="${2:-}"
+    if [[ -n "$details" ]]; then
+        message="$message: $details"
+    fi
+    print_formatted "  [✖]" "$message" 1 # Red color code
 }
 
 print_in_color() {
-    printf "%b" \
-        "$(tput setaf "$2" 2> /dev/null)" \
-        "$1" \
-        "$(tput sgr0 2> /dev/null)"
+    local text="$1"
+    local colorCode="$2"
+    printf "%b" "$(tput setaf "$colorCode" 2>/dev/null)" "$text" "$(tput sgr0 2>/dev/null)"
+}
+
+print_formatted() {
+    local prefix="$1"
+    local message="$2"
+    local colorCode="$3" # Optional color code
+    local formattedPrefix=""
+
+    if [[ -n "$colorCode" ]]; then
+        formattedPrefix="$(print_in_color "$prefix" "$colorCode")"
+    else
+        formattedPrefix="$prefix"
+    fi
+
+    printf "  %s %s\n" "$formattedPrefix" "$message"
 }
 
 print_in_green() {
-    print_in_color "$1" 2
+    print_formatted "[✔]" "$1" 2 # Green color code
 }
 
 print_in_purple() {
-    print_in_color "$1" 5
+    print_formatted "[?]" "$1" 5 # Purple color code (used for questions now)
 }
 
 print_in_red() {
-    print_in_color "$1" 1
+    print_formatted "[✖]" "$1" 1 # Red color code
 }
 
 print_in_yellow() {
-    print_in_color "$1" 3
+    print_formatted "[!]" "$1" 3 # Yellow color code (used for warnings now)
 }
 
 print_question() {
-    print_in_yellow "   [?] $1"
+    print_formatted "[?]" "$1" 3 # Using yellow for questions
 }
 
 print_result() {
-    if [ "$1" -eq 0 ]; then
-        print_success "$2"
+    local exitCode="$1"
+    local message="$2"
+    if (("$exitCode" == 0)); then
+        print_success "$message"
     else
-        print_error "$2"
+        print_error "$message"
     fi
-    return "$1"
+    return "$exitCode"
 }
 
 print_success() {
-    print_in_green "   [✔] $1\n"
+    print_in_green "$1"
 }
 
 print_warning() {
-    print_in_yellow "   [!] $1\n"
+    print_in_yellow "$1"
 }
 
 show_spinner() {
     local -r FRAMES='/-\|'
-    # shellcheck disable=SC2034
     local -r NUMBER_OR_FRAMES=${#FRAMES}
     local -r CMDS="$2"
     local -r MSG="$3"
@@ -158,41 +158,21 @@ show_spinner() {
     local i=0
     local frameText=""
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Note: In order for the Travis CI site to display
-    # things correctly, it needs special treatment, hence,
-    # the "is Travis CI?" checks.
-    if [ "$TRAVIS" != "true" ]; then
-        # Provide more space so that the text hopefully
-        # doesn't reach the bottom line of the terminal window.
-        #
-        # This is a workaround for escape sequences not tracking
-        # the buffer position (accounting for scrolling).
-        #
-        # See also: https://unix.stackexchange.com/a/278888
+    if [[ "${TRAVIS:-false}" != "true" ]]; then
         printf "\n\n\n"
-        tput cuu 3
+        tput cuu 3 2>/dev/null
         tput sc
     fi
 
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Display spinner while the commands are being executed.
     while kill -0 "$PID" &>/dev/null; do
-        frameText="   [${FRAMES:i++%NUMBER_OR_FRAMES:1}] $MSG"
-
-        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        # Print frame text.
-        if [ "$TRAVIS" != "true" ]; then
+        frameText="  [$(print_in_purple "${FRAMES:i++%NUMBER_OR_FRAMES:1}")] $MSG" # Use purple for spinner
+        if [[ "${TRAVIS:-false}" != "true" ]]; then
             printf "%s\n" "$frameText"
         else
             printf "%s" "$frameText"
         fi
-
         sleep 0.2
-
-        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        # Clear frame text.
-        if [ "$TRAVIS" != "true" ]; then
+        if [[ "${TRAVIS:-false}" != "true" ]]; then
             tput rc
         else
             printf "\r"
@@ -200,15 +180,29 @@ show_spinner() {
     done
 }
 
-# Example usage
-ask "What is your name?"
-echo "Hello, $(get_answer)!"
+# Function to get the currently logged-in username
+get_username() {
+    whoami
+}
+
+# Check if the script is run as root
+if [[ "$EUID" -eq 0 ]]; then
+    print_error "This script should not be run as root. Exiting."
+    exit 1
+fi
+
+# Greet the user
+username=$(get_username)
+echo "Hello, $(print_in_green "$username")!"
 
 ask_for_confirmation "Do you want to continue?"
 if answer_is_yes; then
     echo "Continuing..."
 else
     echo "Exiting..."
+    exit 0
 fi
 
-execute "sleep 2" "Sleeping for 2 seconds"
+execute "sleep 1" "Sleeping for 1 seconds"
+
+echo "The username used was: $(print_in_green "$(get_username)")"
