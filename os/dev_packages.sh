@@ -16,7 +16,7 @@ install_dnf_package() {
     local options="${@:2}"
     print_info "Installing DNF package '$package'..."
     if cmd_exists dnf; then
-        sudo dnf install -y "$package" "$options" 2>&1 | tee -a /var/log/dnf.log
+        sudo dnf install -y "$package" "$options"
         if [ $? -eq 0 ]; then
             print_success "DNF package '$package' installed."
         else
@@ -31,10 +31,10 @@ install_dnf_package() {
 
 # Function to install development tools and packages
 install_dev_tools() {
-    print_in_purple " • Installing development tools and packages\n"
-    sudo dnf groupinstall 'Development Tools' -y 2>&1 | tee -a /var/log/dnf.log
+    print_in_purple " • Installing development tools and packages"
+    sudo dnf groupinstall 'Development Tools' -y
     local result=$?
-    sudo dnf install -y git gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel 2>&1 | tee -a /var/log/dnf.log
+    sudo dnf install -y git gcc zlib-devel bzip2-devel readline-devel sqlite-devel openssl-devel
     result=$((result + $?))
     if [ $result -ne 0 ]; then
         print_error "Failed to install development tools."
@@ -51,9 +51,9 @@ install_dnf_group() {
 # Function to update a DNF group
 update_dnf_group() {
     local group="$1"
-    print_info "Updating DNF group '$group'..."
+    print_in_yellow "Updating DNF group '$group'..."
     if cmd_exists dnf; then
-        sudo dnf group update -y "$group" 2>&1 | tee -a /var/log/dnf.log
+        sudo dnf group update -y "$group"
         if [ $? -eq 0 ]; then
             print_success "DNF group '$group' updated."
         else
@@ -69,9 +69,9 @@ update_dnf_group() {
 # Function to upgrade a DNF group with optional components
 upgrade_dnf_group_with_optional() {
     local group="$1"
-    print_info "Upgrading DNF group '$group' with optional components..."
+    print_in_yellow "Upgrading DNF group '$group' with optional components..."
     if cmd_exists dnf; then
-        sudo dnf group upgrade -y --with-optional "$group" 2>&1 | tee -a /var/log/dnf.log
+        sudo dnf group upgrade -y --with-optional "$group"
         if [ $? -eq 0 ]; then
             print_success "DNF group '$group' upgraded with optional components."
         else
@@ -88,8 +88,8 @@ upgrade_dnf_group_with_optional() {
 is_laptop() {
     if [[ -f "/sys/class/dmi/id/chassis_type" ]]; then
         case $(</sys/class/dmi/id/chassis_type) in
-            8 | 9 | 10 | 11) return 0 ;; # It's a laptop
-            *) return 1 ;;               # It's not a laptop
+        8 | 9 | 10 | 11) return 0 ;; # It's a laptop
+        *) return 1 ;;               # It's not a laptop
         esac
     else
         print_warning "Cannot determine chassis type. Assuming this is not a laptop."
@@ -99,7 +99,7 @@ is_laptop() {
 
 # Function to install TLP for battery management on laptops
 install_tlp() {
-    print_in_purple " • Installing TLP for battery management\n"
+    print_in_purple " • Installing TLP for battery management"
     if is_laptop; then
         install_dnf_package tlp tlp-rdw
         if [ $? -ne 0 ]; then
@@ -113,22 +113,22 @@ install_tlp() {
 
 # Function to install multimedia codecs
 install_multimedia_codecs() {
-    print_in_purple " • Installing multimedia codecs\n"
+    print_in_purple " • Installing multimedia codecs"
     update_dnf_group sound-and-video
     if [ $? -ne 0 ]; then
         print_error "Failed to update sound-and-video group."
         # No return here, to allow script to continue
     fi
-    sudo dnf install -y libdvdcss gstreamer1-plugins-{bad-\*,good-\*,ugly-\*,base} gstreamer1-libav --exclude=gstreamer1-plugins-bad-free-devel ffmpeg gstreamer-ffmpeg 2>&1 | tee -a /var/log/dnf.log
+    sudo dnf install -y libdvdcss gstreamer1-plugins-{bad-\*,good-\*,ugly-\*,base} gstreamer1-libav --exclude=gstreamer1-plugins-bad-free-devel ffmpeg gstreamer-ffmpeg
     if [ $? -ne 0 ]; then
         print_error "Failed to install multimedia codecs."
         # No return here, to allow script to continue
     fi
-    sudo dnf install -y lame\* --exclude=lame-devel 2>&1 | tee -a /var/log/dnf.log
+    sudo dnf install -y lame\* --exclude=lame-devel
     if [ $? -ne 0 ]; then
         print_error "Failed to install lame."
         # No return here, to allow script to continue
-    }
+    fi
 
     upgrade_dnf_group_with_optional Multimedia
     if [ $? -ne 0 ]; then
@@ -139,8 +139,8 @@ install_multimedia_codecs() {
 
 # Function to install media players
 install_media_players() {
-    print_in_purple " • Installing media players\n"
-    sudo dnf install -y vlc mpv 2>&1 | tee -a /var/log/dnf.log
+    print_in_purple " • Installing media players"
+    sudo dnf install -y vlc mpv
     if [ $? -ne 0 ]; then
         print_error "Failed to install media players."
         # No return here, to allow script to continue
@@ -149,18 +149,18 @@ install_media_players() {
 
 # Function to install Ulauncher application launcher
 install_ulauncher() {
-    print_in_purple " • Installing Ulauncher\n"
-    sudo dnf install -y ulauncher wmctrl 2>&1 | tee -a /var/log/dnf.log
+    print_in_purple " • Installing Ulauncher"
+    sudo dnf install -y ulauncher wmctrl
     if [ $? -ne 0 ]; then
         print_error "Failed to install ulauncher and wmctrl."
         # No return here, to allow script to continue
-    }
+    fi
 
     # Create a custom shortcut for Wayland
     if cmd_exists gsettings; then
         gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']"
         gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ name "Ulauncher"
-        gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ command "ulauncher-toggle"
+        gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/command "ulauncher-toggle"
         gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/ binding "<Control>space"
         if [ $? -ne 0 ]; then
             print_error "Failed to set Ulauncher hotkey."
@@ -168,7 +168,7 @@ install_ulauncher() {
         fi
 
         print_success "Ulauncher has been installed and the hotkey (Ctrl+Space) has been set up for Wayland."
-        print_info "Please log out and log back in for the changes to take effect."
+        print_in_yellow "Please log out and log back in for the changes to take effect."
     else
         print_warning "gsettings not found. Skipping Ulauncher hotkey setup."
     fi
@@ -179,13 +179,13 @@ install_chrome() {
     print_in_purple " • Installing Chrome\n"
     if ! cmd_exists google-chrome-stable; then
         if cmd_exists dnf; then
-            sudo dnf config-manager --set-enabled google-chrome 2>&1 | tee -a /var/log/dnf.log
+            sudo dnf config-manager --set-enabled google-chrome
             if [ $? -ne 0 ]; then
                 print_error "Failed to enable google-chrome repo."
                 # No return here, to allow script to continue
             fi
-            sudo dnf install -y google-chrome-stable 2>&1 | tee -a /var/log/dnf.log
-             if [ $? -ne 0 ]; then
+            sudo dnf install -y google-chrome-stable
+            if [ $? -ne 0 ]; then
                 print_error "Failed to install chrome."
                 # No return here, to allow script to continue
             fi
@@ -194,14 +194,14 @@ install_chrome() {
             # No return here, to allow script to continue
         fi
     else
-        print_info "Google Chrome is already installed."
+        print_in_yellow "Google Chrome is already installed."
     fi
 }
 
 # Function to install CAD software (KiCad and FreeCAD)
 install_cad_software() {
-    print_in_purple " • Installing KiCad & FreeCAD\n"
-    sudo dnf install -y kicad freecad 2>&1 | tee -a /var/log/dnf.log
+    print_in_purple " • Installing KiCad & FreeCAD"
+    sudo dnf install -y kicad freecad
     if [ $? -ne 0 ]; then
         print_error "Failed to install KiCad and FreeCAD."
         # No return here, to allow script to continue
@@ -210,9 +210,9 @@ install_cad_software() {
 
 # Function to install JupyterLab
 install_jupyterlab() {
-    print_in_purple " • Installing JupyterLab\n"
-    sudo dnf install -y jupyterlab 2>&1 | tee -a /var/log/dnf.log
-     if [ $? -ne 0 ]; then
+    print_in_purple " • Installing JupyterLab"
+    sudo dnf install -y jupyterlab
+    if [ $? -ne 0 ]; then
         print_error "Failed to install JupyterLab."
         # No return here, to allow script to continue
     fi
@@ -221,10 +221,10 @@ install_jupyterlab() {
 
 # Function to install and configure Stow
 install_and_configure_stow() {
-    print_in_purple " • Installing and configuring Stow for dotfiles\n"
+    print_in_purple " • Installing and configuring Stow for dotfiles"
     if ! cmd_exists stow; then
         install_dnf_package stow
-         if [ $? -ne 0 ]; then
+        if [ $? -ne 0 ]; then
             print_error "Failed to install stow."
             # No return here, to allow script to continue
         fi
@@ -240,7 +240,7 @@ install_and_configure_stow() {
             print_error "Failed to create dotfiles directory."
             # No return here, to allow script to continue
         fi
-        print_info "Created dotfiles directory at $dotfiles_dir"
+        print_in_yellow "Created dotfiles directory at $dotfiles_dir"
     else
         print_info "Dotfiles directory already exists at $dotfiles_dir"
     fi
@@ -251,7 +251,7 @@ install_and_configure_stow() {
     mkdir -p "$dotfiles_dir/nvim/.config/nvim"
     mkdir -p "$dotfiles_dir/starship"
     mkdir -p "$dotfiles_dir/tmux"
-     if [ $? -ne 0 ]; then
+    if [ $? -ne 0 ]; then
         print_error "Failed to create subdirectories in dotfiles directory."
         # No return here, to allow script to continue
     fi
@@ -259,37 +259,36 @@ install_and_configure_stow() {
     #  Change to the dotfiles directory.
     cd "$dotfiles_dir" || {
         print_error "Failed to change directory to $dotfiles_dir"
-        return 1 #This is a critical error
+        return 1 # This is a critical error
     }
 
-    # Stow the configurations.
-    stow fish 2>&1
-    stow ghostty 2>&1
-    stow nvim 2>&1
-    stow starship 2>&1
-    stow tmux 2>&1
-     if [ $? -ne 0 ]; then
+    # Stow the configurations
+    stow fish
+    stow ghostty
+    stow nvim
+    stow starship
+    stow tmux
+    if [ $? -ne 0 ]; then
         print_error "Failed to stow configuration files."
-        # No return here, to allow script to continue
+        # No return here, to allow script to continue.
     fi
 
     print_success "Stow has been installed and dotfiles structure has been set up in $dotfiles_dir."
-    print_info "Please ensure your dotfiles are correctly placed in the created subdirectories."
+    print_in_yellow "Please ensure your dotfiles are correctly placed in the created subdirectories."
 }
-
 
 # Function to install TypeScript
 install_typescript() {
-    print_in_purple " • Installing TypeScript\n"
+    print_in_purple " • Installing TypeScript"
     if ! cmd_exists npm; then
         install_dnf_package nodejs # Installs npm along with nodejs
-         if [ $? -ne 0 ]; then
+        if [ $? -ne 0 ]; then
             print_error "Failed to install nodejs."
             # No return here, to allow script to continue
         fi
     fi
     if cmd_exists npm; then
-        sudo npm install -g typescript 2>&1
+        sudo npm install -g typescript
         if [ $? -ne 0 ]; then
             print_error "Failed to install TypeScript."
             # No return here, to allow script to continue
@@ -304,39 +303,38 @@ install_typescript() {
 
 # Function to install Bun
 install_bun() {
-    print_in_purple " • Installing Bun\n"
+    print_in_purple " • Installing Bun"
     # Bun installation requires curl and running a shell script.
     if cmd_exists curl; then
-      #This script installs bun and also sets it up in $HOME/.bun/bin
-      curl -fsSL https://bun.sh/install | bash 2>&1
-      if [ $? -ne 0 ]; then
-        print_error "Failed to install Bun."
-        # No return here, to allow script to continue
-      fi
-      echo 'export PATH="$HOME/.bun/bin:$PATH"' >> ~/.bashrc
-      source ~/.bashrc
-      print_success "Bun has been installed.  Make sure to source ~/.bashrc"
+        # This script installs bun and also sets it up in $HOME/.bun/bin
+        curl -fsSL https://bun.sh/install | bash
+        if [ $? -ne 0 ]; then
+            print_error "Failed to install Bun."
+            # No return here, to allow script to continue
+        fi
+        echo 'export PATH="$HOME/.bun/bin:$PATH"' >>~/.bashrc
+        print_success "Bun has been installed.  Make sure to source ~/.bashrc"
     else
-      print_warning "curl is required to install Bun.  Install curl and try again."
-      # No return here, to allow script to continue
+        print_warning "curl is required to install Bun.  Install curl and try again."
+        # No return here, to allow script to continue
     fi
 }
 
 # Function to install VSCode
 install_vscode() {
-    print_in_purple " • Installing VSCode\n"
+    print_in_purple " • Installing VSCode"
     if ! cmd_exists code; then
         # Get the latest stable VSCode rpm
         VSCODE_RPM_URL=$(curl -s https://code.visualstudio.com/api/update | jq -r '.versions.stable.rpm' 2>/dev/null)
         if [ -n "$VSCODE_RPM_URL" ]; then
             echo "wget $VSCODE_RPM_URL"
             wget "$VSCODE_RPM_URL" -O vscode.rpm
-             if [ $? -ne 0 ]; then
+            if [ $? -ne 0 ]; then
                 print_error "Failed to download VSCode rpm."
                 # No return here, to allow script to continue
             fi
-            sudo rpm -i vscode.rpm 2>&1
-             if [ $? -ne 0 ]; then
+            sudo rpm -i vscode.rpm
+            if [ $? -ne 0 ]; then
                 print_error "Failed to install VSCode rpm."
                 # No return here, to allow script to continue
             fi
@@ -347,15 +345,15 @@ install_vscode() {
             # No return here, to allow script to continue
         fi
     else
-        print_info "VSCode is already installed."
+        print_in_yellow "VSCode is already installed."
     fi
 
 }
 
 # Function to install miscellaneous tools
 install_misc_tools() {
-    print_in_purple " • Installing miscellaneous tools\n"
-    sudo dnf install -y neovim tmux ripgrep fd-find tree 2>&1 | tee -a /var/log/dnf.log
+    print_in_purple " • Installing miscellaneous tools"
+    sudo dnf install -y neovim tmux ripgrep fd-find tree
     if [ $? -ne 0 ]; then
         print_error "Failed to install miscellaneous tools."
         # No return here, to allow script to continue
@@ -366,15 +364,15 @@ install_misc_tools() {
 
 # Function to install Fish shell and make it the default
 install_fish_shell() {
-    print_in_purple " • Installing Fish shell and making it the default shell\n"
+    print_in_purple " • Installing Fish shell and making it the default shell"
     install_dnf_package fish
-     if [ $? -ne 0 ]; then
+    if [ $? -ne 0 ]; then
         print_error "Failed to install fish shell."
         # No return here, to allow script to continue
     fi
 
     if cmd_exists chsh; then
-        sudo chsh -s /usr/bin/fish  # Or wherever fish is located
+        sudo chsh -s /usr/bin/fish # Or wherever fish is located
         if [ $? -ne 0 ]; then
             print_error "Failed to change default shell to fish."
             # No return here, to allow script to continue
@@ -386,43 +384,40 @@ install_fish_shell() {
     fi
 }
 
-
-
 # Function to install Starship for Fish shell
 install_starship_for_fish() {
-    print_in_purple " • Installing Starship for Fish shell\n"
+    print_in_purple " • Installing Starship for Fish shell"
 
     if ! cmd_exists fish; then
         print_warning "Fish shell is not installed.  Install fish shell to install starship for fish."
         return 1 # fish is a pre-requisite.
     fi
     if ! cmd_exists curl; then
-       install_dnf_package curl
-       if [ $? -ne 0 ]; then
+        install_dnf_package curl
+        if [ $? -ne 0 ]; then
             print_error "Failed to install curl."
             # No return here, to allow script to continue
         fi
     fi
 
     # Install starship
-    if cmd_exists curl ; then
-        curl -sS https://starship.rs/install.sh | bash -s -- --yes 2>&1
+    if cmd_exists curl; then
+        curl -sS https://starship.rs/install.sh | bash -s -- --yes
         if [ $? -ne 0 ]; then
             print_error "Failed to install starship."
             # No return here, to allow script to continue
         fi
-        echo "echo \"starship init fish | source\" >> ~/.config/fish/config.fish"
-        echo "echo \"starship init fish | source\" >> ~/.config/fish/config.fish"
+        echo "starship init fish | source" >>~/.config/fish/config.fish
         print_success "Starship has been installed and configured for Fish shell. Add 'starship init fish | source' to your Fish config."
-     else
-        print_warning "Please install curl"
+    else
+        print_warning "Please install curl."
         return 1
-     fi
+    fi
 }
 
 # Function to install Zen Browser
 install_zen_browser() {
-    print_in_purple " • Installing Zen Browser\n"
+    print_in_purple " • Installing Zen Browser"
     if cmd_exists flatpak; then
         sudo flatpak install flathub app.zen_browser.zen -y 2>&1
         if [ $? -ne 0 ]; then
@@ -447,7 +442,7 @@ main() {
         install_chrome
         install_vscode
         install_misc_tools
-        install_fish_shell  # Install fish shell
+        install_fish_shell # Install fish shell
         install_starship_for_fish
         install_tlp
         install_multimedia_codecs
@@ -460,7 +455,7 @@ main() {
 
     # Loop through the installation functions
     for func in "${install_functions[@]}"; do
-        print_info "Calling function: $func"
+        print_in_yellow "Calling function: $func"
         if ! $func; then
             print_error "Function '$func' failed, continuing..."
         fi

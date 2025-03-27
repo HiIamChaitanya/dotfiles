@@ -35,12 +35,27 @@ setup_os_theme_and_terminal_style() {
 }
 
 
+set_wallpaper() {
+    print_in_yellow " • Setting wallpaper "
+    
+    # Check if gsettings is available
+    if ! command -v gsettings &> /dev/null; then
+        print_in_red "gsettings not found. Please install it to set the wallpaper."
+        return 1
+    fi
+
+    # Set the wallpaper using gsettings
+    gsettings set org.gnome.desktop.background picture-uri "file:///home/chaitanya/dotfiles/wallpaper/mandelbrot_set.jpg"
+    print_in_green " • Wallpaper set! "
+}
+
 fedora_setup_final() {
     # cleanup 
     sudo dnf autoremove -y
 
-   # Enable and start services
-   print_in_yellow " • Enabling and starting services "
+    # Enable and start services
+    print_in_yellow " • Enabling and starting services "
+    set_wallpaper
 
    # to do : add services to enable and start here
     
