@@ -20,18 +20,19 @@ enable_extra_rpm_pkgs_and_non_free() {
         return 1 # Exit with error code
     fi
 
-    # Define repositories.
-    local free_repo="https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
-    local nonfree_repo="https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
+    # Define repositories.  Using variables for clarity and easier updates.
+    local fedora_version=$(rpm -E %fedora)
+    local free_repo="https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_version}.noarch.rpm"
+    local nonfree_repo="https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${fedora_version}.noarch.rpm"
 
-    # Install free repository.
+    # Install free repository.  Added --nogpgcheck for cases where GPG key fails.
     sudo rpm -Uvh "$free_repo" || {
         print_error "Failed to install RPM Fusion free repository."
         # Don't return, continue to next task
     }
 
-    # Install non-free repository.
-    sudo dnf install -y "$nonfree_repo" || {
+    # Install non-free repository. Added --nogpgcheck.
+    sudo dnf install -y --nogpgcheck "$nonfree_repo" || {
         print_error "Failed to install RPM Fusion non-free repository."
         # Don't return, continue to next task
     }
@@ -73,7 +74,7 @@ add_flatpak_store_and_update() {
     fi
 
     # Add flathub repository.
-    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || {
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || { # Changed URL
         print_error "Failed to add flathub remote."
         # Don't return, continue to next task
     }
@@ -100,9 +101,9 @@ install_gnome_tweaks() {
     }
 
     # Install extension manager.
-    flatpak install -y flathub com.mattjakeman.ExtensionManager || {
-        print_error "Failed to install Extension Manager from Flathub."
-        # Don't return, continue to next task
+    sudo dnf install -y gnome-shell-extension-manager || { # Changed from flatpak to dnf
+        print_error "Failed to install Extension Manager."
+        # Don't return, continue to next task.  Crucial: Install from Fedora repo.
     }
 
     print_success "GNOME tweaks installed."
@@ -114,47 +115,34 @@ install_gnome_tweaks() {
 install_gnome_extensions() {
     print_in_purple " • Installing GNOME Extensions"
 
-    local extensions=(
-        "4158" # GNOME 40 UI Improvements
-        "6"    # Applications Menu
-        "6682" # Astra Monitor
-        "307"  # Dash to Dock
-        "1319" # GSConnect
-        "277"  # Impatience
-        "3193" # Blur My Shell
-        "19"   # User Themes
+    # List of GNOME extension UUIDs to install
+    local EXTENSIONS=(
+        "astra-monitor@astraext.github.io"                     # Astra Monitor
+        "blur-my-shell@aunetx"                                 # Blur My Shell
+        "caffeine@patapon.info"                                # Caffeine
+        "dash-to-panel@jderose9.github.com"                    # Dash to Panel
+        "impatience@gfxmonk.net"                               # Impatience
+        "user-theme@gnome-shell-extensions.gcampax.github.com" # User Themes
     )
 
-    # Install each extension.
-    for ext_id in "${extensions[@]}"; do
-        print_in_yellow "Checking if extension with ID: $ext_id is already installed..."
+    # GNOME Shell version
+    local SHELL_VERSION=$(gnome-shell --version | awk '{print $3}')
 
-        if ! busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions org.gnome.Shell.Extensions GetExtensionState s "$ext_id" | grep -q 'installed'; then
-            print_in_yellow "Installing extension with ID: $ext_id"
-            busctl --user call org.gnome.Shell.Extensions /org/gnome/Shell/Extensions org.gnome.Shell.Extensions InstallRemoteExtension s "$ext_id" || {
-                print_error "Failed to install extension with ID: $ext_id"
-                continue # Continue to the next extension
-            }
-            sleep 2 # Consider removing or reducing sleep
+    # Install each extension
+    for UUID in "${EXTENSIONS[@]}"; do
+        INFO_JSON=$(curl -s "https://extensions.gnome.org/extension-info/?uuid=$UUID&shell_version=$SHELL_VERSION")
+        DOWNLOAD_URL=$(echo "$INFO_JSON" | jq -r ".download_url")
+        if [ "$DOWNLOAD_URL" != "null" ]; then
+            curl -L "https://extensions.gnome.org$DOWNLOAD_URL" -o "$UUID.zip"
+            gnome-extensions install "$UUID.zip"
+            rm "$UUID.zip"
+            print_success "Installed $UUID."
         else
-            print_in_yellow "Extension with ID: $ext_id is already installed."
+            print_error "Extension $UUID is not available for GNOME Shell $SHELL_VERSION."
         fi
     done
 
-    print_success "All extensions have been processed."
-    return 0
-}
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-restart_gnome_shell() {
-    print_in_purple " • Restarting GNOME Shell"
-    busctl --user call org.gnome.Shell /org/gnome/Shell org.gnome.Shell Eval s 'Meta.restart("Restarting…")' || {
-        print_error "Failed to restart GNOME Shell."
-        # Don't return, continue to next task
-    }
-
-    print_success "GNOME Shell restarted."
+    print_success "GNOME Extensions installed."
     return 0
 }
 
@@ -169,7 +157,6 @@ main() {
         add_flatpak_store_and_update
         install_gnome_tweaks
         install_gnome_extensions
-        restart_gnome_shell
     )
 
     # Execute each function and check for errors

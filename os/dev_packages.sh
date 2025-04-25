@@ -16,7 +16,7 @@ install_dnf_package() {
     local options="${@:2}"
     print_info "Installing DNF package '$package'..."
     if cmd_exists dnf; then
-        sudo dnf install -y "$package" "$options"
+        sudo dnf install -y "$package" "${options[@]}"
         if [ $? -eq 0 ]; then
             print_success "DNF package '$package' installed."
         else
@@ -45,7 +45,7 @@ install_dev_tools() {
 # Function to install a DNF group
 install_dnf_group() {
     local group="$1"
-    install_dnf_package "groupinstall '$1'"
+    sudo dnf group install -y "$group"
 }
 
 # Function to update a DNF group
@@ -103,6 +103,7 @@ install_tlp() {
     if is_laptop; then
         install_dnf_package tlp tlp-rdw
         if [ $? -ne 0 ]; then
+
             print_error "TLP installation failed."
             # No return here, to allow script to continue
         fi
@@ -114,7 +115,7 @@ install_tlp() {
 # Function to install multimedia codecs
 install_multimedia_codecs() {
     print_in_purple " • Installing multimedia codecs"
-    update_dnf_group sound-and-video
+    sudo dnf group update -y sound-and-video
     if [ $? -ne 0 ]; then
         print_error "Failed to update sound-and-video group."
         # No return here, to allow script to continue
@@ -130,7 +131,7 @@ install_multimedia_codecs() {
         # No return here, to allow script to continue
     fi
 
-    upgrade_dnf_group_with_optional Multimedia
+    sudo dnf group upgrade -y --with-optional Multimedia
     if [ $? -ne 0 ]; then
         print_error "Failed to upgrade Multimedia group."
         # No return here, to allow script to continue
@@ -365,24 +366,54 @@ install_misc_tools() {
 # Function to install Fish shell and make it the default
 install_fish_shell() {
     print_in_purple " • Installing Fish shell and making it the default shell"
+
+    # Install fish using the helper function
     install_dnf_package fish
+    # Check the exit status of the install_dnf_package function itself
     if [ $? -ne 0 ]; then
-        print_error "Failed to install fish shell."
-        # No return here, to allow script to continue
+        print_error "Fish shell installation failed. Cannot set as default."
+        return 1 # Exit this function if installation failed
     fi
 
-    if cmd_exists chsh; then
-        sudo chsh -s /usr/bin/fish # Or wherever fish is located
-        if [ $? -ne 0 ]; then
-            print_error "Failed to change default shell to fish."
-            # No return here, to allow script to continue
-        fi
-        print_success "Fish shell has been installed and set as the default shell.  You will need to logout and log back in."
-    else
-        print_warning "chsh command not found.  Please set Fish shell as your default shell manually."
-        # No return here, to allow script to continue
+    # Check if chsh command exists
+    if ! cmd_exists chsh; then
+        print_warning "'chsh' command not found. Cannot set Fish as default shell automatically."
+        print_info "Please set Fish as your default shell manually after logging in."
+        return 1 # Indicate that setting default failed
     fi
+
+    # Get the full path to the fish executable
+    local fish_path
+    fish_path=$(command -v fish)
+    if [ -z "$fish_path" ]; then
+        print_error "Could not find the path to the fish executable after installation."
+        return 1
+    fi
+
+    # Get the current username
+    local current_user
+    current_user=$(whoami)
+    if [ -z "$current_user" ]; then
+        print_error "Could not determine the current user."
+        return 1
+    fi
+
+
+    # Change the default shell for the *current* user
+    # Note: chsh might prompt for a password interactively
+    print_info "Attempting to change the default shell to Fish for user '$current_user'..."
+    if sudo chsh -s "$fish_path" "$current_user"; then
+        print_success "Fish shell has been installed and set as the default shell for '$current_user'."
+        print_in_yellow "You will need to log out and log back in for the change to take effect."
+    else
+        print_error "Failed to change the default shell to Fish using 'chsh'."
+        print_info "You may need to run 'sudo chsh -s $fish_path $current_user' manually."
+        return 1 # Indicate that setting default failed
+    fi
+
+    return 0 # Success
 }
+
 
 # Function to install Starship for Fish shell
 install_starship_for_fish() {
@@ -436,21 +467,21 @@ main() {
     # Array of installation functions
     local install_functions=(
         install_dev_tools
-        install_and_configure_stow
         install_typescript
         install_bun
         install_chrome
         install_vscode
         install_misc_tools
-        install_fish_shell # Install fish shell
+        install_fish_shell 
         install_starship_for_fish
-        install_tlp
+        install_tlp 
         install_multimedia_codecs
         install_media_players
         install_ulauncher
         install_cad_software
         install_jupyterlab
         install_zen_browser
+        install_and_configure_stow
     )
 
     # Loop through the installation functions

@@ -18,8 +18,10 @@ install_fonts() {
 
     sudo dnf install -y fira-code-fonts 'mozilla-fira*' 'google-roboto*'
 
+    sudo dnf install -y sassc
+
     mkdir -p ~/.local/share/fonts
-    find "$FONT_DIR" -type f \( -iname "*.ttf" -o -iname "*.otf" \) -exec cp {} ~/.local/share/fonts/ \;
+    find "$FONT_DIR" -type f \( -iname "*.ttf" -o -iname "*.otf" \) -exec cp -v {} ~/.local/share/fonts/ \;
 
     sudo fc-cache -fv
 }
@@ -47,13 +49,13 @@ EOF
 gnome_shell_theme_setup() {
     print_in_purple "\n • Gnome Shell Theme Setup\n\n"
 
-    git clone --depth=1 "$THEME_REPO" "$THEME_DIR/$THEME_NAME"
+    git clone --depth=1 "$THEME_REPO" "$THEME_DIR/$THEME_NAME" || return 1
     (
         cd "$THEME_DIR/$THEME_NAME"
         chmod +x install.sh tweaks.sh
         ./install.sh -c dark --shell -i fedora -h smaller -sf -a all -m -l -HD --round --darker
         ./tweaks.sh -F -c dark
-    )
+    ) || return 1
 
     sudo flatpak override --filesystem=xdg-config/gtk-3.0
     sudo flatpak override --filesystem=xdg-config/gtk-4.0
@@ -67,12 +69,12 @@ gnome_shell_theme_setup() {
 gnome_cursor_theme_setup() {
     print_in_purple "\n • Gnome Cursor Theme Setup\n\n"
 
-    git clone --depth=1 "$CURSOR_REPO" "$THEME_DIR/$CURSOR_NAME"
+    git clone --depth=1 "$CURSOR_REPO" "$THEME_DIR/$CURSOR_NAME" || return 1
     (
         cd "$THEME_DIR/$CURSOR_NAME"
         chmod +x install.sh
         sudo ./install.sh
-    )
+    ) || return 1
     rm -rf "$THEME_DIR/$CURSOR_NAME"
 
     print_success "Gnome cursor theme setup complete."
