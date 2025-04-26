@@ -18,3 +18,4 @@ set --export PATH $BUN_INSTALL/bin $PATH
 
 # rust
 source "$HOME/.cargo/env.fish"
+starship init fish | source
