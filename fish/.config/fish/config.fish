@@ -6,6 +6,8 @@ end
 
 set fish_greeting
 
+colorscript -r
+
 # starship
 starship init fish | source
 
