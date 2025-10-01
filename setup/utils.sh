@@ -1,24 +1,5 @@
 #!/bin/bash
 
-ask() {
-    print_question "$1"
-    read -r REPLY
-}
-
-ask_for_confirmation() {
-    print_question "$1 (y/n) "
-    read -r -n 1
-    printf "\n"
-}
-
-answer_is_yes() {
-    [[ "$REPLY" =~ ^[Yy]$ ]]
-}
-
-answer_is_no() {
-    [[ "$REPLY" =~ ^[Nn]$ ]]
-}
-
 cmd_exists() {
     command -v "$1" &>/dev/null
 }
@@ -185,24 +166,3 @@ get_username() {
     whoami
 }
 
-# Check if the script is run as root
-if [[ "$EUID" -eq 0 ]]; then
-    print_error "This script should not be run as root. Exiting."
-    exit 1
-fi
-
-# Greet the user
-username=$(get_username)
-echo "Hello, $(print_in_green "$username")!"
-
-ask_for_confirmation "Do you want to continue?"
-if answer_is_yes; then
-    echo "Continuing..."
-else
-    echo "Exiting..."
-    exit 0
-fi
-
-execute "sleep 1" "Sleeping for 1 seconds"
-
-echo "The username used was: $(print_in_green "$(get_username)")"

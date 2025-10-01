@@ -26,37 +26,21 @@ enable_extra_rpm_pkgs_and_non_free() {
     local nonfree_repo="https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${fedora_version}.noarch.rpm"
 
     # Install free repository.  Added --nogpgcheck for cases where GPG key fails.
-    sudo rpm -Uvh "$free_repo" || {
-        print_error "Failed to install RPM Fusion free repository."
-        # Don't return, continue to next task
-    }
+    sudo rpm -Uvh "$free_repo"
 
     # Install non-free repository. Added --nogpgcheck.
-    sudo dnf install -y --nogpgcheck "$nonfree_repo" || {
-        print_error "Failed to install RPM Fusion non-free repository."
-        # Don't return, continue to next task
-    }
+    sudo dnf install -y --nogpgcheck "$nonfree_repo" 
 
     # Upgrade system.
-    sudo dnf upgrade --refresh -y || {
-        print_error "Failed to upgrade packages."
-        # Don't return, continue to next task
-    }
-
+    sudo dnf upgrade --refresh -y 
     #upgrade core group
-    sudo dnf group upgrade -y core || {
-        print_error "Failed to update core group."
-        # Don't return, continue to next task
-    }
+    sudo dnf group upgrade -y core 
 
     # Install additional repositories and plugins.
-    sudo dnf install -y rpmfusion-free-release-tainted dnf-plugins-core fedora-workstation-repositories || {
-        print_error "Failed to install additional repositories."
-        # Don't return, continue to next task
-    }
+    sudo dnf install -y rpmfusion-free-release-tainted dnf-plugins-core fedora-workstation-repositories 
 
     print_success "Extra RPM packages and non-free options enabled."
-    return 0
+   
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -74,19 +58,10 @@ add_flatpak_store_and_update() {
     fi
 
     # Add flathub repository.
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || { # Changed URL
-        print_error "Failed to add flathub remote."
-        # Don't return, continue to next task
-    }
-
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo 
     # Update flatpak.
-    flatpak update -y || {
-        print_error "Failed to update flatpak."
-        # Don't return, continue to next task
-    }
-
+    flatpak update -y
     print_success "Flatpak store added and updated."
-    return 0
 }
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -94,11 +69,7 @@ add_flatpak_store_and_update() {
 install_gnome_tweaks() {
     print_in_purple " • Installing some misc GNOME tweaks"
 
-    # Install gnome tweaks and extension.
-    sudo dnf install -y gnome-tweaks gnome-shell-extension-appindicator || {
-        print_error "Failed to install GNOME tweaks."
-        # Don't return, continue to next task
-    }
+    sudo dnf install -y gnome-tweaks gnome-shell-extension-appindicator
 
     # Install extension manager.
     sudo dnf install -y gnome-shell-extension-manager || { # Changed from flatpak to dnf
@@ -109,7 +80,6 @@ install_gnome_tweaks() {
     print_success "GNOME tweaks installed."
     return 0
 }
-
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 install_gnome_extensions() {

@@ -7,6 +7,10 @@ source "$(dirname "${BASH_SOURCE[0]}")/utils.sh"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+install_functions(){
+    print_in_purple "\n Install $(name)"
+}
+
 is_laptop() {
     [[ -f "/sys/class/dmi/id/chassis_type" ]] &&
         case $(</sys/class/dmi/id/chassis_type) in
@@ -57,6 +61,7 @@ install_chrome() {
     sudo dnf config-manager --set-enabled google-chrome
     sudo dnf install -y google-chrome-stable
 }
+
 
 install_cad_software() {
     print_in_purple "\n • Installing KiCad & FreeCAD\n"

@@ -40,7 +40,7 @@ handle_dotfiles_directory() {
 
 # Function to clone the dotfiles repository
 clone_dotfiles_repo() {
-    git clone --depth=1 https://github.com/HiIamChaitanya/dotfiles.git ~/dotfiles
+    git clone --depth=1 https://github.com/HiIamChaitanya/dotfiles.git ~/
 }
 
 # Function to install dotfiles

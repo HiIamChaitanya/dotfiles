@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
 # Configuration
 # DOT="$HOME/dotfiles" # You likely don't need this here if install.sh sets the context
 
@@ -202,7 +200,8 @@ install_chrome() {
 # Function to install CAD software (KiCad and FreeCAD)
 install_cad_software() {
     print_in_purple " • Installing KiCad & FreeCAD"
-    sudo dnf install -y kicad freecad
+    sudo dnf install -y kicad
+    flathub install freecad -y
     if [ $? -ne 0 ]; then
         print_error "Failed to install KiCad and FreeCAD."
         # No return here, to allow script to continue
@@ -234,7 +233,6 @@ install_and_configure_stow() {
     # Define the dotfiles directory
     local dotfiles_dir="$HOME/dotfiles"
 
-    # Create the dotfiles directory if it doesn't exist
     if [ ! -d "$dotfiles_dir" ]; then
         mkdir -p "$dotfiles_dir"
         if [ $? -ne 0 ]; then
@@ -450,7 +448,7 @@ install_starship_for_fish() {
 install_zen_browser() {
     print_in_purple " • Installing Zen Browser"
     if cmd_exists flatpak; then
-        sudo flatpak install flathub app.zen_browser.zen -y 2>&1
+        flatpak install flathub app.zen_browser.zen -y 2>&1
         if [ $? -ne 0 ]; then
             print_error "Failed to install Zen Browser."
             # No return here, to allow script to continue

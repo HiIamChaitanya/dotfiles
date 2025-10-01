@@ -21,7 +21,7 @@ install_extensions_and_pkg_managers() {
 }
 
 install_dev_packages() {
-    print_in_purple " • Installing dev packages "
+    print_in_purple " • Installing dev pa,ckages "
     ./os/dev_packages.sh
     print_in_green "  Dev packages installed! "
     sleep 2
@@ -92,34 +92,26 @@ install_nvidia_drivers() {
     fi
 }
 
-ask_reboot() {
-    while true; do
-        read -p "Do you want to reboot the system now? (y/n): " choice
-        case "$choice" in
-            y|Y)
-                echo "Rebooting the system..."
-                sudo reboot
-                break
-                ;;
-            n|N)
-                echo "Reboot cancelled. Please remember to reboot later for changes to take effect."
-                break
-                ;;
-            *)
-                echo "Invalid input. Please enter 'y' for yes or 'n' for no."
-                ;;
-        esac
-    done
+update_device_firmware() {
+    print_in_purple " • Updating device firmwares... "
+
+    sudo fwupdmgr get-devices 
+    sudo fwupdmgr refresh --force 
+    sudo fwupdmgr get-updates 
+    sudo fwupdmgr update -y
+   
 }
 
+
 main() {
-    init_fedora_setup || exit 1 
-    install_extensions_and_pkg_managers || exit 1
-    install_dev_packages || exit 1 
-    setup_os_theme_and_terminal_style || exit 1
-    fedora_setup_final  || exit 1
-    install_nvidia_drivers  || exit 1
-    ask_reboot  
+    init_fedora_setup 
+    install_extensions_and_pkg_managers
+    install_dev_packages 
+    setup_os_theme_and_terminal_style
+    fedora_setup_final
+    install_nvidia_drivers  
+    update_device_firmware
+
 }
 
 if [ "$#" -gt 0 ]; then
