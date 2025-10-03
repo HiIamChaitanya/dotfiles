@@ -10,6 +10,7 @@ curl \-Ls https://raw.githubusercontent.com/HiIamChaitanya/dotfiles/main/setup.s
 
 - automate setup for my workstation cluster (laptop and workstation) for shared instance that includes shared resources
 - use gnome delta project 
+- update tmux config
 
 ### Functionality 
 
