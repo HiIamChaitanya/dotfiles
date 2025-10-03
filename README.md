@@ -1,16 +1,17 @@
-## **Dotfiles**
+## Dotfiles for Fedora Workstation
 
-### **Install**
+### Install
 
 ```
 curl \-Ls https://raw.githubusercontent.com/HiIamChaitanya/dotfiles/main/setup.sh | sh
 ```
 
-### **TO-DOs**
+### TO-DOs
 
-* use nix pkg manager
+- automate setup for my workstation cluster (laptop and workstation) for shared instance that includes shared resources
+- use gnome delta project 
 
-### **❔ What does this do?**
+### Functionality 
 
 These are my core "dotfiles," used to customize a fresh installation of **Fedora Workstation** for my development workflow and general setup. The setup.sh script automates the install of dotfiles on new install not installing dotfiles of my preferred environment. Key areas include:
 
