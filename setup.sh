@@ -19,24 +19,6 @@ ________          __    _____.__.__
 EOF
 
 }
-# Function to handle dotfiles directory
-handle_dotfiles_directory() {
-    local dotfiles_dir="$HOME/dotfiles"
-
-    if [ -d "$dotfiles_dir" ]; then
-        echo "Dotfiles directory already exists. Do you want to overwrite it? (y/n)"
-        if answer_is_yes; then
-            echo "Overwriting existing dotfiles directory..."
-            # Compress existing dotfiles directory
-            tar -czvf dotfiles_backup_$(date +%Y%m%d%H%M%S).tar.gz "$dotfiles_dir"
-            echo "Backed up existing dotfiles to dotfiles_backup_$(date +%Y%m%d%H%M%S).tar.gz"
-            rm -rf "$dotfiles_dir"
-        else
-            echo "Keeping existing dotfiles directory. Exiting..."
-            exit 0
-        fi
-    fi
-}
 
 # Function to clone the dotfiles repository
 clone_dotfiles_repo() {
@@ -51,7 +33,6 @@ install_dotfiles() {
 # Main script execution
 main() {
     print_banner
-    handle_dotfiles_directory
     clone_dotfiles_repo
     install_dotfiles
 }
